@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ប្រព័ន្ធប្រឡងអនឡាញ</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{navy:{DEFAULT:'#0f2a4a',700:'#173b66',500:'#2d6cb5',50:'#f5f7fa'},mint:{DEFAULT:'#3ccf9f',600:'#1fae82',100:'#e8f8f2'},line:'#e6eaf0',muted:'#64748b'}}}};</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ---- Exam App UI Kit (exam-app-ui-kit/ui-kit.css) ---- */
+/* ==========================================================================
+   Exam App UI Kit — design tokens + reusable components
+   Use in Exam.html and Teacher.html (next to Tailwind). Font: Noto Sans Khmer.
+   ========================================================================== */
+:root{
+  --n:#0f2a4a;        /* navy — text, primary buttons */
+  --n-700:#173b66; --n-500:#2d6cb5;
+  --mu:#64748b;       /* muted text */
+  --li:#94a3b8;       /* light text / placeholders */
+  --bd:#e6eaf0;       /* borders */
+  --sf:#f5f7fa;       /* soft surface */
+  --a:#1fae82;        /* mint accent */
+  --a-300:#3ccf9f; --a1:#e8f8f2;
+  --blue:#1f8fd1;
+  --warn:#d97706; --danger:#e11d48;
+  --r-sm:10px; --r:14px; --r-lg:18px; --r-xl:22px;
+}
+body{font-family:"Noto Sans Khmer","Khmer OS Battambang",system-ui,sans-serif;background:#fff;color:var(--n);-webkit-font-smoothing:antialiased}
+
+/* Icon tile (soft / neumorphic) — wrap an SVG icon that uses url(#gi) / url(#gn) / url(#gw) */
+.tl{flex:none;width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,#fff,#eef2f6);
+  box-shadow:6px 6px 14px rgba(15,42,74,.12),-5px -5px 12px #fff,inset 0 1px 0 #fff}
+.tl svg{width:50%;height:50%}
+.tl-sm{width:32px;height:32px;border-radius:10px}
+.tl-lg{width:76px;height:76px;border-radius:22px}
+
+/* Buttons */
+.btn{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:600;cursor:pointer;transition:filter .15s,background .15s}
+.btn-primary{background:linear-gradient(135deg,var(--n-700),var(--n));color:#fff;box-shadow:0 8px 16px -8px rgba(15,42,74,.6)}
+.btn-primary:hover{filter:brightness(1.12)}
+.btn-ghost{background:#fff;color:var(--n);border:1px solid var(--bd)}
+.btn-ghost:hover{background:var(--sf)}
+.btn-ai{background:linear-gradient(135deg,var(--a-300),var(--blue));color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* Cards & panels */
+.card{background:#fff;border:1px solid var(--bd);border-radius:var(--r-lg);padding:16px}
+.card-raised{box-shadow:0 20px 40px -24px rgba(15,42,74,.25)}
+.panel-navy{border-radius:var(--r-xl);background:linear-gradient(150deg,#1d4a7d,var(--n-700) 40%,var(--n));color:#fff;padding:20px}
+.panel-navy .muted{color:#9fb4cc}
+
+/* Input with leading icon */
+.field{display:flex;align-items:center;gap:10px;border:1px solid var(--bd);border-radius:var(--r);padding:4px 14px;background:#fff}
+.field:focus-within{border-color:var(--n);box-shadow:0 0 0 3px rgba(15,42,74,.07)}
+.field svg{width:18px;height:18px;flex:none}
+.field input{flex:1;min-width:0;border:0;outline:0;font:inherit;font-size:15px;padding:10px 0;color:var(--n);background:none}
+
+/* Segmented control (សិស្ស | គ្រូ) */
+.seg{display:inline-flex;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:3px}
+.seg button{display:inline-flex;align-items:center;gap:7px;border:0;background:none;font:inherit;color:var(--mu);padding:7px 16px;border-radius:8px;cursor:pointer}
+.seg .on{background:#fff;color:var(--n);font-weight:600;box-shadow:0 1px 2px rgba(15,42,74,.08)}
+
+/* Badges */
+.badge{border-radius:99px;padding:2px 9px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge-open{background:var(--a1);color:var(--a)}      /* កំពុងបើក */
+.badge-draft{background:#eef3f9;color:var(--n-500)}   /* ព្រាង */
+.badge-closed{background:#f1f5f9;color:var(--mu)}     /* បានបិទ */
+.badge-review{background:#fff4e5;color:var(--warn)}   /* រង់ចាំពិនិត្យ */
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--a);background:var(--a1);border-radius:99px;padding:3px 10px}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--a);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.25}}
+
+/* Exam screen */
+.timer{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--n-700),var(--n));color:#fff;border-radius:12px;padding:6px 10px;font-weight:700;font-variant-numeric:tabular-nums}
+.progress{height:4px;background:var(--sf)}.progress>div{height:100%;background:linear-gradient(90deg,var(--a-300),var(--blue));transition:width .3s}
+.qchip{width:38px;height:38px;border-radius:12px;border:0;font:inherit;font-weight:700;color:var(--mu);cursor:pointer;
+  background:linear-gradient(145deg,#fff,#eef2f6);box-shadow:4px 4px 10px rgba(15,42,74,.1),-3px -3px 8px #fff}
+.qchip.answered{color:var(--a);box-shadow:inset 0 0 0 1.5px var(--a),4px 4px 10px rgba(15,42,74,.1)}
+.qchip.current{background:linear-gradient(135deg,var(--n-700),var(--n));color:#fff}
+.option{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid var(--bd);background:#fff;border-radius:var(--r);padding:11px 12px;margin-bottom:9px;font:inherit;color:var(--n);cursor:pointer}
+.option .letter{flex:none;width:28px;height:28px;border-radius:10px;text-align:center;line-height:28px;font-size:13px;background:linear-gradient(145deg,#fff,#eef2f6);box-shadow:3px 3px 7px rgba(15,42,74,.12),-2px -2px 5px #fff}
+.option.selected{border-color:var(--a);background:var(--a1);font-weight:700}
+.option.selected .letter{background:linear-gradient(135deg,var(--a-300),var(--blue));color:#fff;box-shadow:none}
+.read-lock{display:flex;align-items:center;gap:8px;border-radius:12px;background:#fff8eb;color:#b45309;padding:9px 11px;font-size:12.5px;font-weight:600}
+
+/* Teacher sidebar */
+.nav-item{display:flex;align-items:center;gap:10px;border:0;background:none;font:inherit;color:var(--mu);padding:7px 8px;border-radius:12px;cursor:pointer;width:100%;text-align:left}
+.nav-item.on{background:var(--sf);color:var(--n);font-weight:700}
+/* ---- app overrides ---- */
+html,body{margin:0;font-family:'Noto Sans Khmer',system-ui,sans-serif;background:#fff;color:#0f2a4a}
+.option{margin-bottom:0}
+.tl-md{width:64px;height:64px;border-radius:20px}.tl-me{width:42px;height:42px;border-radius:13px}
+.tl.mx-auto{margin-left:auto;margin-right:auto}
+.option:disabled{opacity:.5;cursor:not-allowed}
+.btn{width:auto}
+.qchip{flex:none}
+.lg{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}.lg i{width:18px;height:18px;border-radius:5px;background:#0f2a4a;position:relative}.lg i:after{content:'';position:absolute;right:-3px;bottom:-3px;width:8px;height:8px;border-radius:3px;background:#1fae82;border:2px solid #fff}
+.rl{list-style:none;margin:0;padding:0}.rl li{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#64748b;line-height:1.7;margin-bottom:8px}.rl svg{width:16px;height:16px;flex:none;margin-top:4px}
+.scr{margin:18px auto 0;width:130px;height:130px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(145deg,#fff,#eef2f6);box-shadow:8px 8px 18px rgba(15,42,74,.12),-6px -6px 14px #fff}
+.scr b{font-size:28px}.scr span{font-size:12px;color:#64748b}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+canvas{display:block;max-width:100%}
+html{-webkit-text-size-adjust:100%}
+body{overflow-x:hidden}
+@media (max-width:640px){input,textarea,select{font-size:16px!important}}
+@media print{body{display:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="gi" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3ccf9f"/><stop offset="1" stop-color="#1f8fd1"/></linearGradient><linearGradient id="gn" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2d6cb5"/><stop offset="1" stop-color="#0f2a4a"/></linearGradient><linearGradient id="gw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#e11d48"/></linearGradient></defs></svg>
+<div id="app"></div>
+<div id="wm" style="position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;z-index:40;display:none"></div>
+<div id="modal"></div>
+<script>
+var BOOT = (function () { var q = new URLSearchParams(location.search); return { t: (q.get('t') || '').slice(0, 40), e: (q.get('e') || '').slice(0, 40), tu: 'https://script.google.com/macros/s/AKfycbw9X83KJbwz2gYId1x39hSBFHQCxdRfGN20sM-3sEQWuPdVSf2ZqAaR2lAkSjR3aQrJ/exec', api: 'https://script.google.com/macros/s/AKfycbydkSpA_1thWAAUQxLbzotkpt1e1POAjyuj3OE8AQr7gfl_BR6FPxhkCk285JGShhYB/exec' }; })();
+(function () {
+'use strict';
+var KH = '០១២៣៤៥៦៧៨៩';
+var LET = ['ក', 'ខ', 'គ', 'ឃ', 'ង', 'ច', 'ឆ', 'ជ', 'ឈ', 'ញ'];
+function kh(n) { return String(n).replace(/[0-9]/g, function (d) { return KH.charAt(+d); }); }
+function $(s) { return document.querySelector(s); }
+function h(tag, a, kids) {
+  var e = document.createElement(tag);
+  a = a || {};
+  for (var k in a) {
+    var v = a[k];
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k === 'on') { for (var ev in v) e.addEventListener(ev, v[ev]); }
+    else if (v !== false && v !== null && v !== undefined) e.setAttribute(k, v);
+  }
+  (kids || []).forEach(function (c) { if (c === null || c === undefined) return; e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+  return e;
+}
+
+var S = { t: BOOT.t || '', code: BOOT.e || '', info: null, exam: null, qs: [], ans: {}, cur: 0,
+  readLeft: {}, strikes: 0, events: [], flags: [], started: false, finished: false, paused: false,
+  lockStrike: false, who: null, saver: null, lastSaved: '', fsOK: false, endAt: 0, t0: 0, name: '', sid: '', payload: null, tick: null, clock: null, resizeT: null };
+
+// Two transports: google.script.run when served by Apps Script, cookieless fetch() to the
+// App 2 /exec JSON API (doPost) when this page is hosted elsewhere (GitHub Pages).
+function api(fn) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  if (window.google && google.script && google.script.run) {
+    return new Promise(function (resolve, reject) {
+      var r = google.script.run
+        .withSuccessHandler(function (x) {
+          if (x && x.ok) resolve(x.data); else reject(new Error((x && x.error) || 'មានបញ្ហាមិនស្គាល់។'));
+        })
+        .withFailureHandler(function () {
+          var er = new Error('មិនអាចភ្ជាប់ទៅម៉ាស៊ីនមេបានទេ។ សូមពិនិត្យអ៊ីនធឺណិត រួចព្យាយាមម្ដងទៀត។');
+          er.network = true; reject(er);
+        });
+      r[fn].apply(r, args);
+    });
+  }
+  var netErr = function () { var er = new Error('មិនអាចភ្ជាប់ទៅម៉ាស៊ីនមេបានទេ។ សូមពិនិត្យអ៊ីនធឺណិត រួចព្យាយាមម្ដងទៀត។'); er.network = true; return er; };
+  return fetch(BOOT.api, { method: 'POST', credentials: 'omit', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn: fn, args: args }) })
+    .then(function (res) { if (!res.ok) throw netErr(); return res.json().catch(function () { throw netErr(); }); }, function () { throw netErr(); })
+    .then(function (x) { if (x && x.ok) return x.data; throw new Error((x && x.error) || 'មានបញ្ហាមិនស្គាល់។'); });
+}
+
+// ---------------------------------------------------------------- layout helpers (Exam App UI Kit)
+var ICONS = {
+  'home': '<svg viewBox="0 0 24 24"><path fill="url(#gn)" d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>',
+  'exam': '<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3" fill="url(#gn)"/><path d="M8 8h8M8 12h8M8 16h5" stroke="#3ccf9f" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  'grade': '<svg viewBox="0 0 24 24"><path fill="url(#gi)" d="M4 20l1-5L16 4l4 4L9 19z"/><path fill="url(#gn)" d="M3 21h18v-1.5H3z"/></svg>',
+  'results': '<svg viewBox="0 0 24 24"><rect x="4" y="12" width="4" height="8" rx="1.5" fill="url(#gn)"/><rect x="10" y="7" width="4" height="13" rx="1.5" fill="url(#gi)"/><rect x="16" y="4" width="4" height="16" rx="1.5" fill="url(#gn)"/></svg>',
+  'settings': '<svg viewBox="0 0 24 24"><path fill="url(#gn)" d="M19.4 13a7.5 7.5 0 000-2l2-1.6-2-3.4-2.4 1a7 7 0 00-1.7-1L15 3.5h-4l-.4 2.5a7 7 0 00-1.7 1l-2.4-1-2 3.4L6.6 11a7.5 7.5 0 000 2l-2 1.6 2 3.4 2.4-1a7 7 0 001.7 1l.4 2.5h4l.4-2.5a7 7 0 001.7-1l2.4 1 2-3.4z"/><circle cx="13" cy="12" r="3" fill="#fff"/></svg>',
+  'student': '<svg viewBox="0 0 24 24"><path fill="url(#gn)" d="M12 3L1 8.5l11 5.5 9-4.5V16h2V8.5z"/><path fill="url(#gi)" d="M5.5 12.5V17c0 1.7 2.9 3.5 6.5 3.5s6.5-1.8 6.5-3.5v-4.5L12 16z"/></svg>',
+  'user': '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="url(#gn)"/><path fill="url(#gi)" d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>',
+  'lock-code': '<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="12" rx="3" fill="url(#gn)"/><path d="M7 7V5a5 5 0 0110 0v2" fill="none" stroke="url(#gi)" stroke-width="2.2"/><circle cx="12" cy="13" r="2" fill="#fff"/></svg>',
+  'clock': '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="url(#gi)"/><path d="M12 7v5l3 2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>',
+  'shield-check': '<svg viewBox="0 0 24 24"><path fill="url(#gn)" d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5z"/><path d="M8.5 12l2.5 2.5 4.5-5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  'shield-warning': '<svg viewBox="0 0 24 24"><path fill="url(#gw)" d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5z"/><path d="M12 8v5M12 16.5v.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>',
+  'bolt': '<svg viewBox="0 0 24 24"><path fill="url(#gi)" d="M13.5 2L4 14h7l-1.5 8L20 10h-7z"/></svg>',
+  'phone': '<svg viewBox="0 0 24 24"><rect x="5.5" y="1.5" width="13" height="21" rx="3" fill="url(#gn)"/><rect x="7.5" y="4" width="9" height="13" rx="1" fill="#fff" opacity=".9"/><circle cx="12" cy="19.5" r="1" fill="#fff"/></svg>',
+  'check-circle': '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="url(#gi)"/><path d="M7.5 12l3 3 6-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  'students': '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" fill="url(#gn)"/><path fill="url(#gn)" d="M2 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5z"/><circle cx="17" cy="9" r="2.8" fill="url(#gi)"/><path fill="url(#gi)" d="M14.5 14.6c3.5-.6 7.5.8 7.5 5.4h-4.5c0-2.2-1-4-3-5.4z"/></svg>',
+  'open': '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="url(#gi)"/><circle cx="12" cy="12" r="3.5" fill="#fff"/></svg>'
+};
+// Icon markup is a fixed constant from the kit (never user data), so innerHTML is safe here.
+function icon(name) { var s = document.createElement('span'); s.innerHTML = ICONS[name] || ''; return s.firstChild || s; }
+function tile(name, cls) { var t = h('span', { class: 'tl ' + (cls || '') }); t.appendChild(icon(name)); return t; }
+var INP = 'w-full rounded-[14px] border border-line bg-white px-4 py-3 text-base text-navy focus:outline-none focus:border-navy focus:ring-4 focus:ring-navy/5';
+var BTN = 'btn transition disabled:opacity-50 disabled:cursor-not-allowed ';
+var BTN_P = BTN + 'btn-primary';
+var BTN_N = BTN + 'btn-primary';
+var BTN_L = BTN + 'btn-ghost';
+// Input with a leading kit icon (.field)
+function fieldIcon(name, input) {
+  input.className = 'flex-1 min-w-0 border-0 outline-none bg-transparent py-2.5 text-[15px] text-navy';
+  var f = h('label', { class: 'field' }); f.appendChild(icon(name)); f.appendChild(input); return f;
+}
+
+function mount(node) { var a = $('#app'); a.textContent = ''; a.appendChild(node); }
+function card(kids) {
+  return h('div', { class: 'min-h-screen flex justify-center px-5 py-6 sm:items-center' }, [
+    h('div', { class: 'w-full max-w-md sm:bg-white sm:border sm:border-line sm:rounded-[18px] sm:p-6 sm:shadow-[0_20px_40px_-24px_rgba(15,42,74,.25)]' }, [h('div', { class: 'lg' }, [h('i'), 'ប្រឡងអនឡាញ'])].concat(kids))]);
+}
+function head(title, sub, ic) {
+  return h('div', { class: 'text-center mt-8 mb-6' }, [
+    tile(ic || 'exam', 'tl-lg mx-auto mb-4'),
+    h('div', { class: 'text-[22px] font-bold leading-snug', text: title }),
+    sub ? h('div', { class: 'text-[13.5px] text-muted mt-1', text: sub }) : null]);
+}
+function loading(msg) { mount(card([head('ប្រព័ន្ធប្រឡងអនឡាញ', '', 'clock'), h('div', { class: 'py-4 text-center text-muted', text: msg })])); }
+function showModal(kids, dark) {
+  var m = $('#modal'); m.textContent = '';
+  m.appendChild(h('div', { class: 'fixed inset-0 z-50 flex items-center justify-center p-5 backdrop-blur-sm ' + (dark ? 'bg-navy/90' : 'bg-navy/55') }, [
+    h('div', { class: 'w-full max-w-sm bg-white rounded-[22px] shadow-2xl p-6 text-center' }, kids)]));
+}
+function closeModal() { $('#modal').textContent = ''; }
+
+// ---------------------------------------------------------------- entry screens
+function showError(msg, retry) {
+  mount(card([head('មានបញ្ហា', '', 'shield-warning'), h('div', { class: 'space-y-4 text-center' }, [
+    h('div', { class: 'text-rose-600 font-medium', text: msg }),
+    retry ? h('button', { class: BTN_P + ' w-full', text: 'ព្យាយាមម្ដងទៀត', on: { click: retry } }) : null])]));
+}
+
+// Shared entry page: one link for everyone. Students continue here; teachers go to the teacher app (Google sign-in).
+function showHome() {
+  var roleBtn = function (ic, title, sub) {
+    return [tile(ic), h('div', { class: 'min-w-0 flex-1' }, [h('div', { class: 'font-bold text-[15px]', text: title }), h('div', { class: 'text-[12.5px] text-muted', text: sub })]), h('span', { class: 'text-muted text-lg', text: '›' })];
+  };
+  var cls = 'w-full flex items-center gap-4 text-left rounded-[18px] border px-4 py-4 transition bg-white ';
+  var student = h('button', { type: 'button', class: cls + 'border-mint-600 bg-mint-100', on: { click: function () { showLookup(); } } },
+    roleBtn('student', 'ខ្ញុំជាសិស្ស', 'ចូលប្រឡងដោយលេខសម្គាល់ និងកូដប្រឡង'));
+  var teacherKids = roleBtn('user', 'ខ្ញុំជាគ្រូ', 'ចូលដោយគណនី Google ដើម្បីបង្កើត និងគ្រប់គ្រងការប្រឡង');
+  var teacher = BOOT.tu
+    ? h('a', { href: BOOT.tu, target: '_top', rel: 'noopener', class: cls + 'border-line hover:bg-navy-50' }, teacherKids)
+    : null;
+  mount(card([head('ប្រព័ន្ធប្រឡងអនឡាញ', 'សូមជ្រើសរើសថាអ្នកជានរណា', 'shield-check'), h('div', { class: 'space-y-3' }, [student, teacher])]));
+}
+
+function showLookup(msg) {
+  var fromLink = !!BOOT.t;   // QR code / link already carries the teacher ID
+  var t = h('input', { class: INP, placeholder: 'ឧ. TLT9SF', value: S.t, autocomplete: 'off' });
+  var sid = h('input', { class: INP, placeholder: 'ឧ. 012', value: S.sid, maxlength: '40', autocomplete: 'off' });
+  var c = h('input', { class: INP, placeholder: 'ឧ. ABC234', value: S.code, autocomplete: 'off' });
+  var err = h('div', { class: 'text-rose-600 text-sm', text: msg || '' });
+  var go = function () {
+    S.t = t.value.trim(); S.code = c.value.trim(); S.sid = sid.value.trim(); S.who = null;
+    if (!S.t) { err.textContent = 'សូមបញ្ចូលលេខកូដគ្រូ។'; return; }
+    if (!S.sid) { err.textContent = 'សូមបញ្ចូលលេខសម្គាល់សិស្ស។'; return; }
+    if (!S.code) { err.textContent = 'សូមបញ្ចូលលេខកូដការប្រឡង។'; return; }
+    loadInfo();
+  };
+  c.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') go(); });
+  t.setAttribute('placeholder', 'លេខកូដគ្រូ (ឧ. TLT9SF)'); sid.setAttribute('placeholder', 'លេខសម្គាល់សិស្ស (ID)'); c.setAttribute('placeholder', 'កូដប្រឡង');
+  var tf = fieldIcon('user', t), sf = fieldIcon('student', sid), cf = fieldIcon('lock-code', c);
+  c.style.textTransform = 'uppercase'; c.style.letterSpacing = '.08em';
+  mount(card([head('ចូលប្រឡង', 'បញ្ចូលលេខសម្គាល់ និងកូដប្រឡង', 'student'), h('div', { class: 'space-y-3' }, [
+    fromLink ? null : tf, sf, cf,
+    err, h('button', { class: BTN_P + ' w-full', text: 'បន្ត', on: { click: go } }),
+    fromLink ? null : h('button', { type: 'button', class: 'w-full text-sm text-muted hover:text-navy', text: '← ត្រឡប់ទៅទំព័រដើម', on: { click: showHome } })])]));
+}
+
+function loadInfo() {
+  loading('កំពុងស្វែងរកការប្រឡង…');
+  api('getExamInfo', S.t, S.code).then(function (info) {
+    S.info = info;
+    if (info.status === 'Open' && info.uses_roster && S.sid) return confirmStudent(S.sid, true);
+    showJoin();
+  }).catch(function (e) { if (e.network) showError(e.message, loadInfo); else showLookup(e.message); });
+}
+
+// Roster mode: ask the server who this ID is, then show "is this you?".
+function confirmStudent(id, fromLookup) {
+  loading('កំពុងពិនិត្យលេខសម្គាល់…');
+  return api('checkStudent', S.t, S.code, id).then(function (r) { S.who = r; showJoin(); })
+    .catch(function (e) {
+      if (e.network) showError(e.message, function () { confirmStudent(id, fromLookup); });
+      else if (fromLookup) showLookup(e.message); else showJoin(e.message);
+    });
+}
+
+function startWith(btn, err, name, sid, label) {
+  S.name = name; S.sid = sid;
+  err.textContent = ''; btn.disabled = true; btn.textContent = 'កំពុងចាប់ផ្ដើម…';
+  var fsP = tryFS();   // must be called inside the click gesture
+  fsP.then(function (ok) { S.fsOK = ok; return api('startExam', S.t, S.code, S.name, S.sid); })
+    .then(beginExam)
+    .catch(function (e) { exitFS(); btn.disabled = false; btn.textContent = label; err.textContent = e.message; });
+}
+
+function showJoin(msg) {
+  var info = S.info, open = info.status === 'Open';
+  var err = h('div', { class: 'text-rose-600 text-sm', text: msg || '' });
+  var rules = [
+    'សូមអានសំណួរឱ្យបានច្បាស់។ កន្លែងឆ្លើយនឹងបើកបន្ទាប់ពីរយៈពេលអានអប្បបរមា។',
+    'ការប្រឡងដំណើរការពេញអេក្រង់។ ការចាកចេញពីអេក្រង់ ប្ដូរផ្ទាំង ឬប្ដូរកម្មវិធី ត្រូវបានរាប់ជាការព្រមាន។',
+    'ការព្រមាន ១៖ ជូនដំណឹង។ ការព្រមាន ២៖ ចម្លើយទាំងអស់ត្រូវលុប ហើយត្រឡប់ទៅសំណួរទី ១ (ម៉ោងនៅតែរត់)។ ការព្រមាន ' + kh(info.max_strikes || 3) + '៖ ចាក់សោ និងដាក់ចម្លើយស្វ័យប្រវត្តិ។',
+    'ហាមចម្លង បិទភ្ជាប់ ឬចុចកណ្ដុរស្ដាំ។ ការវាយបញ្ចូលរហ័សមិនធម្មតាត្រូវបានកត់ត្រា។'];
+  var rulesEl = h('ul', { class: 'rl' }, rules.map(function (r) { return h('li', null, [icon('check-circle'), h('span', { text: r })]); }));
+  var stat = function (ic, val, lab) { return h('div', { class: 'flex-1 bg-white/10 rounded-[14px] p-2.5 text-center' }, [h('span', { class: 'inline-block w-5 h-5' }, [icon(ic)]), h('b', { class: 'block text-[15px] mt-1', text: val }), h('span', { class: 'text-[11px] text-[#9fb4cc]', text: lab })]); };
+  var panel = h('div', { class: 'panel-navy mt-6 mb-4' }, [
+    h('div', { class: 'text-xs text-[#9fb4cc]', text: 'ការប្រឡង' }),
+    h('b', { class: 'block text-[17px] mt-0.5 mb-4', text: info.title }),
+    open ? h('div', { class: 'flex gap-2.5' }, [stat('clock', kh(info.duration_minutes), 'នាទី'), stat('exam', kh(info.question_count), 'សំណួរ'), stat('shield-warning', kh(info.max_strikes || 3), 'ការព្រមាន')]) : null]);
+  var body;
+  if (!open) {
+    body = [h('div', { class: 'text-center text-rose-600 font-medium', text: 'ការប្រឡងនេះមិនទាន់បើក ឬត្រូវបានបិទហើយ។' })];
+  } else if (info.uses_roster && S.who) {
+    var who = S.who;
+    var go = h('button', { class: BTN_P + ' w-full', text: 'ត្រឹមត្រូវ · ចាប់ផ្ដើមប្រឡង' });
+    go.addEventListener('click', function () { startWith(go, err, who.student_name, who.student_id, 'ត្រឹមត្រូវ · ចាប់ផ្ដើមប្រឡង'); });
+    body = [
+      h('div', { class: 'text-xs text-muted', text: 'តើនេះជាអ្នកមែនទេ?' }),
+      h('div', { class: 'flex items-center gap-3 border border-line rounded-2xl p-3' }, [
+        h('span', { class: 'tl tl-me font-bold text-mint-600', text: who.student_name.charAt(0) }),
+        h('div', { class: 'min-w-0' }, [h('b', { class: 'block text-[14.5px] truncate', text: who.student_name }), h('span', { class: 'text-xs text-muted', text: who.student_id })])]),
+      rulesEl, err, go,
+      h('button', { type: 'button', class: 'w-full text-sm text-muted hover:text-navy', text: '← មិនមែនខ្ញុំទេ', on: { click: function () { S.who = null; S.sid = ''; showJoin(); } } })];
+  } else if (info.uses_roster) {
+    var sidR = h('input', { class: INP, placeholder: 'លេខសម្គាល់សិស្ស (ID)', maxlength: '40', autocomplete: 'off', value: S.sid });
+    var next = h('button', { class: BTN_P + ' w-full', text: 'បន្ត' });
+    var doNext = function () {
+      var v = sidR.value.trim();
+      if (!v) { err.textContent = 'សូមបញ្ចូលលេខសម្គាល់សិស្ស។'; return; }
+      S.sid = v; confirmStudent(v, false);
+    };
+    next.addEventListener('click', doNext);
+    sidR.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') doNext(); });
+    body = [fieldIcon('student', sidR), err, next];
+  } else {
+    var name = h('input', { class: INP, placeholder: 'ឈ្មោះពេញរបស់អ្នក', maxlength: '80', autocomplete: 'off', value: S.name });
+    var sid = h('input', { class: INP, placeholder: 'លេខសម្គាល់សិស្ស', maxlength: '40', autocomplete: 'off', value: S.sid });
+    var btn = h('button', { class: BTN_P + ' w-full', text: 'ចាប់ផ្ដើមប្រឡង' });
+    btn.addEventListener('click', function () {
+      var n = name.value.trim(), i = sid.value.trim();
+      if (!n || !i) { err.textContent = 'សូមបញ្ចូលឈ្មោះ និងលេខសម្គាល់សិស្ស។'; return; }
+      startWith(btn, err, n, i, 'ចាប់ផ្ដើមប្រឡង');
+    });
+    body = [rulesEl, fieldIcon('user', name), fieldIcon('student', sid), err, btn];
+  }
+  mount(card([panel, h('div', { class: 'space-y-3' }, body)]));
+}
+
+// ---------------------------------------------------------------- fullscreen
+function fsEl() { return document.fullscreenElement || document.webkitFullscreenElement; }
+function tryFS() {
+  var el = document.documentElement;
+  var fn = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (!fn) return Promise.resolve(false);
+  try { return Promise.race([Promise.resolve(fn.call(el)).then(function () { return true; }, function () { return false; }), new Promise(function (r) { setTimeout(function () { r(false); }, 2000); })]); }
+  catch (e) { return Promise.resolve(false); }
+}
+function exitFS() {
+  try { if (fsEl()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } } catch (e) {}
+}
+
+// ---------------------------------------------------------------- exam start
+function beginExam(d) {
+  if (d.student) { S.name = d.student.student_name; S.sid = d.student.student_id; }
+  S.exam = d.exam; S.qs = d.questions; S.ans = d.saved_answers || {}; S.cur = 0; S.readLeft = {}; S.strikes = Number(d.strikes) || 0; S.events = []; S.flags = [];
+  S.lastSaved = JSON.stringify(S.ans);
+  if (S.strikes || Object.keys(S.ans).length) S.events.push({ t: 0, type: 'resume', detail: 'strikes ' + S.strikes + ', answers ' + Object.keys(S.ans).length });
+  S.t0 = Date.now(); S.endAt = performance.now() + d.remaining_seconds * 1000;
+  S.started = true; S.finished = false; S.paused = false;
+  S.lockStrike = true; setTimeout(function () { S.lockStrike = false; }, 2500);
+  S.events.push({ t: 0, type: 'start', detail: S.fsOK ? 'fullscreen' : 'no_fullscreen' });
+  buildWatermark();
+  buildShell();
+  renderNav(); renderQuestion();
+  S.tick = setInterval(onTick, 1000);
+  S.clock = setInterval(updateClock, 250);
+  S.saver = setInterval(autosave, 30000);
+  updateClock();
+  if (S.strikes >= (Number(S.exam.max_strikes) || 3)) lockout();   // reloaded after the last strike
+}
+
+// ---------------------------------------------------------------- watermark + canvas
+function wmText() { return S.name + ' · ' + S.sid; }
+function buildWatermark() {
+  var c = document.createElement('canvas'); c.width = 380; c.height = 220;
+  var x = c.getContext('2d');
+  x.translate(190, 110); x.rotate(-Math.PI / 6);
+  x.font = '600 16px "Noto Sans Khmer", sans-serif'; x.fillStyle = 'rgba(15,42,74,0.09)'; x.textAlign = 'center';
+  x.fillText(wmText(), 0, 0);
+  var w = $('#wm'); w.style.backgroundImage = 'url(' + c.toDataURL() + ')'; w.style.display = 'block';
+}
+function drawWM(ctx, w, hh, alpha, size) {
+  ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = '#0f2a4a';
+  ctx.font = '600 ' + size + 'px "Noto Sans Khmer", sans-serif';
+  ctx.rotate(-Math.PI / 6);
+  var t = wmText(), tw = ctx.measureText(t).width + 70, step = size * 4.2, diag = Math.sqrt(w * w + hh * hh), row = 0;
+  for (var y = -diag * 0.2; y < diag; y += step, row++) {
+    for (var x = -diag + (row % 2 ? tw / 2 : 0); x < diag; x += tw) ctx.fillText(t, x, y);
+  }
+  ctx.restore();
+}
+function noise(ctx, w, hh, n, alpha) {
+  for (var i = 0; i < n; i++) {
+    ctx.beginPath(); ctx.strokeStyle = 'hsla(' + ((Math.random() * 360) | 0) + ',45%,45%,' + alpha + ')';
+    ctx.lineWidth = 0.7 + Math.random() * 1.3;
+    ctx.moveTo(0, Math.random() * hh);
+    ctx.bezierCurveTo(w * 0.3, Math.random() * hh, w * 0.65, Math.random() * hh, w, Math.random() * hh);
+    ctx.stroke();
+  }
+  for (var j = 0; j < (w * hh) / 700; j++) {
+    ctx.fillStyle = 'rgba(15,42,74,' + (Math.random() * 0.18) + ')';
+    ctx.fillRect(Math.random() * w, Math.random() * hh, 1.6, 1.6);
+  }
+}
+function tokens(text) {
+  if (window.Intl && Intl.Segmenter) {
+    return Array.from(new Intl.Segmenter('km', { granularity: 'word' }).segment(text), function (s) { return s.segment; });
+  }
+  return text.split(/(\s+)/);
+}
+function wrapText(ctx, text, maxW) {
+  var out = [];
+  String(text).split('\n').forEach(function (para) {
+    var cur = '';
+    tokens(para).forEach(function (tok) {
+      if (ctx.measureText(cur + tok).width <= maxW) { cur += tok; return; }
+      if (cur.trim()) { out.push(cur.replace(/\s+$/, '')); cur = ''; }
+      tok = tok.replace(/^\s+/, '');
+      if (ctx.measureText(tok).width > maxW) {   // very long token: break by characters
+        Array.from(tok).forEach(function (ch) {
+          if (ctx.measureText(cur + ch).width > maxW && cur) { out.push(cur); cur = ''; }
+          cur += ch;
+        });
+      } else cur = tok;
+    });
+    out.push(cur);
+  });
+  return out;
+}
+function drawQuestion() {
+  var cv = $('#qc'); if (!cv) return;
+  var q = S.qs[S.cur], dpr = window.devicePixelRatio || 1;
+  var w = Math.max(260, cv.parentNode.clientWidth), size = w < 420 ? 18 : 21, lh = size * 1.75, pad = 18;
+  var m = document.createElement('canvas').getContext('2d');
+  m.font = '500 ' + size + 'px "Noto Sans Khmer", sans-serif';
+  var lines = wrapText(m, q.text, w - pad * 2), hh = Math.max(90, Math.ceil(lines.length * lh + pad * 2));
+  cv.width = w * dpr; cv.height = hh * dpr; cv.style.width = w + 'px'; cv.style.height = hh + 'px';
+  var ctx = cv.getContext('2d'); ctx.scale(dpr, dpr);
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, hh);
+  noise(ctx, w, hh, 9, 0.28);
+  ctx.font = '500 ' + size + 'px "Noto Sans Khmer", sans-serif'; ctx.fillStyle = '#0f2a4a'; ctx.textBaseline = 'alphabetic';
+  lines.forEach(function (ln, i) { ctx.fillText(ln, pad, pad + size * 1.15 + i * lh); });
+  noise(ctx, w, hh, 4, 0.16);
+  drawWM(ctx, w, hh, 0.11, 14);
+}
+var fontReady = null;
+function ensureFont() {
+  if (!fontReady) {
+    fontReady = (document.fonts && document.fonts.load)
+      ? Promise.race([Promise.all([document.fonts.load('500 20px "Noto Sans Khmer"', 'ក'), document.fonts.load('600 14px "Noto Sans Khmer"', 'ក')]), new Promise(function (r) { setTimeout(r, 3000); })])
+      : Promise.resolve();
+  }
+  return fontReady;
+}
+
+// ---------------------------------------------------------------- exam shell
+var UI = {};
+function buildShell() {
+  UI.timerText = h('span', { text: '--:--' });
+  UI.timer = h('div', { class: 'timer shrink-0' }, [h('span', { class: 'inline-block w-[15px] h-[15px]' }, [icon('clock')]), UI.timerText]);
+  UI.strikes = h('span', { text: '' });
+  UI.strikeLine = h('div', { class: 'flex items-center gap-1 text-[11.5px] text-muted mt-0.5' }, [h('span', { class: 'inline-block w-3 h-3' }, [icon('shield-warning')]), UI.strikes]);
+  UI.progress = h('div', { style: 'width:0' });
+  UI.nav = h('div', { class: 'flex flex-wrap gap-2.5' });
+  UI.qhead = h('div', { class: 'flex justify-between text-xs text-muted mb-2' });
+  UI.canvasWrap = h('div', { class: 'rounded-xl overflow-hidden bg-white' });
+  UI.bannerText = h('span');
+  UI.banner = h('div', { class: 'hidden' }, [h('span', { class: 'inline-block w-4 h-4 flex-none' }, [icon('lock-code')]), UI.bannerText]);
+  UI.answer = h('div', { class: 'space-y-2.5' });
+  UI.prev = h('button', { class: 'flex-1 rounded-[14px] py-3 font-bold border border-line bg-white text-navy disabled:opacity-35', text: '← មុន', on: { click: function () { go(S.cur - 1); } } });
+  UI.next = h('button', { class: 'flex-1 rounded-[14px] py-3 font-bold text-white disabled:opacity-35 btn-primary', text: 'បន្ទាប់ →', on: { click: function () { go(S.cur + 1); } } });
+  var submitBtn = h('button', { class: 'shrink-0 rounded-xl bg-mint-100 text-mint-600 font-bold text-xs px-3 py-2', text: 'ដាក់ការប្រឡង', on: { click: confirmSubmit } });
+  mount(h('div', { class: 'min-h-screen pb-24' }, [
+    h('div', { class: 'bg-white sticky top-0 z-30 border-b border-line' }, [
+      h('div', { class: 'max-w-3xl mx-auto px-4 pt-3.5 pb-2.5 flex items-center gap-2.5' }, [
+        h('div', { class: 'min-w-0 flex-1' }, [h('div', { class: 'font-bold text-[13.5px] truncate', text: S.exam.title }), UI.strikeLine]),
+        UI.timer, submitBtn]),
+      h('div', { class: 'progress' }, [UI.progress])]),
+    h('div', { class: 'max-w-3xl mx-auto px-4 py-4 space-y-4' }, [
+      h('div', { class: 'text-xs text-muted truncate', text: S.name + ' · ' + S.sid }),
+      UI.nav,
+      h('div', { class: 'border border-line rounded-[18px] p-4 shadow-[0_16px_32px_-24px_rgba(15,42,74,.3)] space-y-3' }, [UI.qhead, UI.canvasWrap, UI.banner, UI.answer])]),
+    h('div', { class: 'fixed left-0 right-0 bottom-0 z-30 bg-white border-t border-line', style: 'padding-bottom:env(safe-area-inset-bottom)' }, [
+      h('div', { class: 'max-w-3xl mx-auto flex gap-2.5 px-4 py-3' }, [UI.prev, UI.next])])]));
+  updateStrikeLabel();
+}
+function updateStrikeLabel() {
+  UI.strikes.textContent = 'ការព្រមាន ' + kh(S.strikes) + '/' + kh(S.exam.max_strikes);
+  UI.strikes.className = S.strikes ? 'text-rose-600 font-semibold' : '';
+}
+function isAnswered(q) {
+  var a = S.ans[q.id];
+  switch (q.type) {
+    case 'MCQ': return typeof a === 'number';
+    case 'TRUE_FALSE': return typeof a === 'boolean';
+    case 'MATCHING': return Array.isArray(a) && a.length > 0 && a.every(function (x) { return x !== null && x !== undefined && x !== ''; });
+    default: return typeof a === 'string' && a.trim() !== '';
+  }
+}
+function renderNav() {
+  UI.nav.textContent = '';
+  var answered = 0;
+  S.qs.forEach(function (q, i) {
+    var ok = isAnswered(q); if (ok) answered++;
+    var cls = i === S.cur ? 'qchip current' : (ok ? 'qchip answered' : 'qchip');
+    UI.nav.appendChild(h('button', { class: cls, text: kh(i + 1), on: { click: function () { go(i); } } }));
+  });
+  if (UI.progress) UI.progress.style.width = (S.qs.length ? Math.round(answered / S.qs.length * 100) : 0) + '%';
+}
+function go(i) {
+  if (i < 0 || i >= S.qs.length) return;
+  S.cur = i; renderNav(); renderQuestion();
+}
+function renderQuestion() {
+  var q = S.qs[S.cur];
+  UI.qhead.textContent = '';
+  UI.qhead.appendChild(h('span', { text: 'សំណួរទី ' + kh(S.cur + 1) + ' / ' + kh(S.qs.length) }));
+  UI.qhead.appendChild(h('b', { class: 'text-mint-600', text: kh(q.points) + ' ពិន្ទុ' }));
+  UI.canvasWrap.textContent = '';
+  UI.canvasWrap.appendChild(h('canvas', { id: 'qc' }));
+  ensureFont().then(drawQuestion);
+  if (S.readLeft[q.id] === undefined) S.readLeft[q.id] = Math.max(0, Number(S.exam.min_read_seconds) || 0);
+  renderAnswer();
+  UI.prev.disabled = S.cur === 0;
+  UI.next.disabled = S.cur === S.qs.length - 1;
+}
+function applyLock() {
+  var q = S.qs[S.cur]; if (!q) return;
+  var left = S.readLeft[q.id] || 0;
+  UI.banner.className = left > 0 ? 'read-lock' : 'hidden';
+  UI.bannerText.textContent = left > 0 ? 'សូមអានសំណួរឱ្យច្បាស់ — អាចឆ្លើយបានក្នុងរយៈពេល ' + kh(left) + ' វិនាទី' : '';
+  var els = UI.answer.querySelectorAll('[data-ans]');
+  for (var i = 0; i < els.length; i++) els[i].disabled = left > 0;
+  UI.answer.style.opacity = left > 0 ? '0.55' : '1';
+}
+
+// ---------------------------------------------------------------- answer widgets
+function setAns(q, v) { S.ans[q.id] = v; renderNav(); }
+function optBtn(selected, label, text, onClick) {
+  var b = h('button', { type: 'button', 'data-ans': '1', class: 'option' + (selected ? ' selected' : '') }, [
+    h('span', { class: 'letter', text: label }),
+    h('span', { class: 'flex-1', text: text })]);
+  b.addEventListener('click', onClick);
+  return b;
+}
+function renderAnswer() {
+  var q = S.qs[S.cur], a = S.ans[q.id], box = UI.answer;
+  box.textContent = '';
+  if (q.type === 'MCQ') {
+    q.options.forEach(function (o, i) {
+      box.appendChild(optBtn(a === i, LET[i] || String(i + 1), o, function () { setAns(q, i); renderAnswer(); }));
+    });
+  } else if (q.type === 'TRUE_FALSE') {
+    box.appendChild(optBtn(a === true, '✓', 'ពិត', function () { setAns(q, true); renderAnswer(); }));
+    box.appendChild(optBtn(a === false, '✗', 'មិនពិត', function () { setAns(q, false); renderAnswer(); }));
+  } else if (q.type === 'FILL_BLANK') {
+    var inp = h('input', { class: INP, 'data-ans': '1', maxlength: '300', autocomplete: 'off', placeholder: 'វាយចម្លើយនៅទីនេះ', value: typeof a === 'string' ? a : '' });
+    guardInput(inp, q); box.appendChild(inp);
+  } else if (q.type === 'MATCHING') {
+    var cur = Array.isArray(a) ? a.slice() : q.left.map(function () { return null; });
+    q.left.forEach(function (lt, i) {
+      var sel = h('select', { class: INP, 'data-ans': '1' }, [h('option', { value: '', text: '— ជ្រើសរើស —' })].concat(
+        q.right.map(function (r) { return h('option', { value: String(r.i), text: r.t }); })));
+      sel.value = (cur[i] === null || cur[i] === undefined) ? '' : String(cur[i]);
+      sel.addEventListener('change', function () {
+        var arr = Array.isArray(S.ans[q.id]) ? S.ans[q.id].slice() : q.left.map(function () { return null; });
+        arr[i] = sel.value === '' ? null : Number(sel.value);
+        setAns(q, arr);
+      });
+      box.appendChild(h('div', { class: 'rounded-[14px] border border-line p-3 space-y-2' }, [
+        h('div', { class: 'font-medium', text: kh(i + 1) + '. ' + lt }), sel]));
+    });
+  } else {
+    var ta = h('textarea', { class: INP, 'data-ans': '1', rows: '8', placeholder: 'សរសេរចម្លើយរបស់អ្នកនៅទីនេះ…' });
+    ta.value = typeof a === 'string' ? a : '';
+    guardInput(ta, q); box.appendChild(ta);
+  }
+  applyLock();
+}
+
+// ---------------------------------------------------------------- typing guards
+function flag(q, type, detail) {
+  if (S.flags.length >= 100) return;
+  S.flags.push({ question_id: q.id, type: type, detail: detail || '' });
+}
+function guardInput(el, q) {
+  var prevLen = el.value.length, lastT = 0;
+  ['paste', 'drop', 'cut', 'copy'].forEach(function (ev) {
+    el.addEventListener(ev, function (e) { e.preventDefault(); if (ev === 'paste' || ev === 'drop') flag(q, 'paste_attempt', ev); });
+  });
+  el.addEventListener('beforeinput', function (e) {
+    var t = e.inputType || '';
+    if (t === 'insertFromPaste' || t === 'insertFromDrop' || t === 'insertFromYank' || t === 'insertFromPasteAsQuotation') { e.preventDefault(); flag(q, 'paste_attempt', t); }
+  });
+  el.addEventListener('input', function () {
+    var now = performance.now(), delta = el.value.length - prevLen;
+    if (delta >= 15 && now - lastT < 250) flag(q, 'burst', delta + ' chars');
+    prevLen = el.value.length; lastT = now;
+    S.ans[q.id] = el.value; renderNav();
+  });
+}
+
+// ---------------------------------------------------------------- timers
+function fmt(sec) { sec = Math.max(0, Math.ceil(sec)); var m = Math.floor(sec / 60), s = sec % 60; return kh(('0' + m).slice(-2)) + ':' + kh(('0' + s).slice(-2)); }
+function updateClock() {
+  if (!S.started || S.finished) return;
+  var left = (S.endAt - performance.now()) / 1000;
+  UI.timerText.textContent = fmt(left);
+  UI.timer.style.background = left <= 60 ? 'linear-gradient(135deg,#f43f5e,#e11d48)' : '';
+  if (left <= 0) {
+    S.events.push({ t: Date.now() - S.t0, type: 'time_up', detail: '' });
+    showModal([tile('clock', 'tl-md mx-auto mb-3.5'), h('div', { class: 'text-[17px] font-bold text-navy', text: 'អស់ម៉ោងហើយ!' }), h('div', { class: 'mt-2 text-[13px] text-muted leading-relaxed', text: 'កំពុងដាក់ចម្លើយរបស់អ្នកដោយស្វ័យប្រវត្តិ…' })]);
+    submit(true);
+  }
+}
+function onTick() {
+  if (!S.started || S.finished || S.paused || document.hidden) return;
+  var q = S.qs[S.cur];
+  if (q && S.readLeft[q.id] > 0) { S.readLeft[q.id]--; applyLock(); }
+}
+
+// ---------------------------------------------------------------- strikes
+function trigger(kind) {
+  if (!S.started || S.finished || S.paused || S.lockStrike) return;
+  S.lockStrike = true; setTimeout(function () { S.lockStrike = false; }, 1500);
+  strike(kind);
+}
+// Autosave answers to the server so a reload / dead battery does not lose work (silent on failure).
+function autosave() {
+  if (!S.started || S.finished) return;
+  var s = JSON.stringify(S.ans);
+  if (s === S.lastSaved) return;
+  api('saveProgress', S.t, S.code, S.sid, S.ans).then(function () { S.lastSaved = s; }, function () {});
+}
+function strike(kind) {
+  S.strikes++;
+  api('reportStrike', S.t, S.code, S.sid, kind).catch(function () {});
+  var n = S.strikes, max = Number(S.exam.max_strikes) || 3;
+  S.events.push({ t: Date.now() - S.t0, type: kind, detail: 'strike ' + n });
+  updateStrikeLabel();
+  if (n >= max) return lockout();
+  S.paused = true;
+  var title = 'ការព្រមាន ' + kh(n) + '/' + kh(max), body, reset = false;
+  if (n === 1) body = 'អ្នកបានចាកចេញពីអេក្រង់ប្រឡង។ ការធ្វើបែបនេះម្ដងទៀតនឹងមានផលវិបាកធ្ងន់ធ្ងរជាងនេះ។';
+  else { reset = true; body = 'ចម្លើយទាំងអស់របស់អ្នកត្រូវបានលុប ហើយអ្នកត្រូវត្រឡប់ទៅសំណួរទី ១។ ម៉ោងនៅតែបន្តរត់។ ការប្រឡងនឹងត្រូវចាក់សោនៅការព្រមាន ' + kh(max) + '។'; }
+  if (reset) { S.ans = {}; S.readLeft = {}; S.cur = 0; renderNav(); renderQuestion(); }
+  showModal([
+    tile('shield-warning', 'tl-md mx-auto mb-3.5'),
+    h('div', { class: 'text-[17px] font-bold text-rose-600', text: title }),
+    h('div', { class: 'mt-2 text-[13px] text-muted leading-relaxed', text: body }),
+    h('button', { class: BTN_P + ' w-full mt-5', text: 'ខ្ញុំយល់ហើយ បន្តប្រឡង', on: { click: resume } })], true);
+}
+function resume() {
+  var done = function () { closeModal(); S.lockStrike = true; setTimeout(function () { S.lockStrike = false; }, 1500); S.paused = false; };
+  if (S.fsOK && !fsEl()) tryFS().then(done); else done();
+}
+function lockout() {
+  S.paused = true;
+  showModal([
+    tile('shield-warning', 'tl-md mx-auto mb-3.5'),
+    h('div', { class: 'text-[17px] font-bold text-rose-600', text: 'ការប្រឡងត្រូវបានចាក់សោ' }),
+    h('div', { class: 'mt-2 text-[13px] text-muted leading-relaxed', text: 'អ្នកបានចាកចេញពីអេក្រង់ប្រឡងលើសកម្រិតកំណត់។ ចម្លើយរបស់អ្នកកំពុងត្រូវបានដាក់ដោយស្វ័យប្រវត្តិ…' })], true);
+  submit(true);
+}
+
+// ---------------------------------------------------------------- submit
+function confirmSubmit() {
+  if (S.finished || S.paused) return;
+  var un = S.qs.filter(function (q) { return !isAnswered(q); }).length;
+  showModal([
+    tile('exam', 'tl-md mx-auto mb-3.5'),
+    h('div', { class: 'text-[17px] font-bold text-navy', text: 'ដាក់ការប្រឡង?' }),
+    h('div', { class: 'mt-2 text-[13px] text-muted leading-relaxed', text: un ? 'អ្នកនៅមាន ' + kh(un) + ' សំណួរដែលមិនទាន់ឆ្លើយ។ បន្ទាប់ពីដាក់ហើយ មិនអាចកែបានទេ។' : 'បន្ទាប់ពីដាក់ហើយ មិនអាចកែចម្លើយបានទេ។' }),
+    h('div', { class: 'mt-5 flex gap-3' }, [
+      h('button', { class: BTN_L + ' flex-1', text: 'ត្រឡប់ទៅពិនិត្យ', on: { click: closeModal } }),
+      h('button', { class: BTN_P + ' flex-1', text: 'ដាក់ការប្រឡង', on: { click: function () { closeModal(); submit(false); } } })])]);
+}
+function submit(auto) {
+  if (S.finished) return;
+  S.finished = true; clearInterval(S.tick); clearInterval(S.clock); clearInterval(S.saver);
+  S.payload = { t: S.t, code: S.code, exam_id: S.exam.exam_id, student_id: S.sid, student_name: S.name, answers: S.ans,
+    cheat: { strikes: S.strikes, auto_submitted: !!auto, events: S.events, typing_flags: S.flags } };
+  exitFS();
+  send(0);
+}
+function send(n) {
+  mount(card([head('កំពុងដាក់ចម្លើយ…', 'សូមកុំបិទទំព័រនេះ។', 'clock')]));
+  api('submitExam', S.payload).then(done).catch(function (e) {
+    if (e.network && n < 3) setTimeout(function () { send(n + 1); }, 1500 * (n + 1));
+    else if (/រវល់/.test(e.message) && n < 6) setTimeout(function () { send(n + 1); }, 1500 * (n + 1) + Math.floor(Math.random() * 1500));
+    else if (/រួចហើយ/.test(e.message)) done({ submitted: true });
+    else { closeModal(); showError(e.message, function () { send(0); }); }
+  });
+}
+function done(r) {
+  closeModal(); $('#wm').style.display = 'none'; S.started = false;
+  var kids = [h('div', { class: 'text-[13px] text-muted leading-relaxed', text: 'អរគុណ ' + S.name + '។ ចម្លើយរបស់អ្នកត្រូវបានកត់ត្រាហើយ។ អ្នកអាចបិទទំព័រនេះបាន។' })];
+  if (r && r.show_score) kids.push(h('div', { class: 'scr' }, [h('b', { text: kh(r.score) }), h('span', { text: 'លើ ' + kh(r.max_score) + ' ពិន្ទុ' })]));
+  else if (r && r.submitted) kids.push(h('div', { class: 'text-sm text-muted', text: 'ពិន្ទុនឹងត្រូវប្រកាសបន្ទាប់ពីគ្រូពិនិត្យរួច។' }));
+  mount(card([head('ដាក់ការប្រឡងរួចរាល់', S.exam ? S.exam.title : '', 'check-circle'), h('div', { class: 'text-center space-y-3' }, kids)]));
+}
+
+// ---------------------------------------------------------------- anti-cheat listeners
+document.addEventListener('visibilitychange', function () { if (document.hidden) trigger('visibility'); });
+window.addEventListener('blur', function () { trigger('blur'); });
+document.addEventListener('fullscreenchange', function () { if (S.started && fsEl()) S.fsOK = true; if (S.fsOK && !fsEl()) trigger('fullscreen_exit'); });
+document.addEventListener('webkitfullscreenchange', function () { if (S.fsOK && !fsEl()) trigger('fullscreen_exit'); });
+document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+document.addEventListener('selectstart', function (e) { var t = e.target; if (!(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA'))) e.preventDefault(); });
+document.addEventListener('dragstart', function (e) { e.preventDefault(); });
+['copy', 'cut'].forEach(function (ev) { document.addEventListener(ev, function (e) { e.preventDefault(); }); });
+document.addEventListener('paste', function (e) { e.preventDefault(); });
+document.addEventListener('keydown', function (e) {
+  var k = (e.key || '').toLowerCase(), mod = e.ctrlKey || e.metaKey, block = false;
+  if (e.key === 'F12') block = true;
+  if (mod && e.shiftKey && (k === 'i' || k === 'j' || k === 'c')) block = true;
+  if (mod && (k === 'u' || k === 's' || k === 'p' || k === 'c' || k === 'x' || k === 'v' || k === 'insert')) block = true;
+  if (e.altKey && e.metaKey && (k === 'i' || k === 'j' || k === 'c' || k === 'u')) block = true;
+  if (block) {
+    e.preventDefault(); e.stopPropagation();
+    if (S.started && !S.finished && mod && k === 'v') { var q = S.qs[S.cur]; if (q) flag(q, 'paste_attempt', 'shortcut'); }
+  }
+}, true);
+document.addEventListener('keyup', function (e) {
+  if (e.key === 'PrintScreen' && S.started && !S.finished) {
+    try { navigator.clipboard.writeText(''); } catch (x) {}
+    S.events.push({ t: Date.now() - S.t0, type: 'printscreen', detail: '' });
+  }
+});
+window.addEventListener('beforeunload', function (e) { if (S.started && !S.finished) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('resize', function () { clearTimeout(S.resizeT); S.resizeT = setTimeout(function () { if (S.started && !S.finished) drawQuestion(); }, 200); });
+
+// ---------------------------------------------------------------- boot
+if (S.t && S.code) loadInfo(); else if (S.t || S.code) showLookup(); else showHome();
+})();
+</script>
+</body>
+</html>
