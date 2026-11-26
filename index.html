@@ -139,7 +139,8 @@ function h(tag, a, kids) {
   return e;
 }
 
-var S = { t: BOOT.t || '', code: BOOT.e || '', info: null, exam: null, qs: [], ans: {}, cur: 0,
+// The exam code is never taken from the link: students must type it (the teacher shows it in class).
+var S = { t: BOOT.t || '', code: '', info: null, exam: null, qs: [], ans: {}, cur: 0,
   readLeft: {}, strikes: 0, events: [], flags: [], started: false, finished: false, paused: false,
   lockStrike: false, who: null, saver: null, lastSaved: '', fsOK: false, endAt: 0, t0: 0, name: '', sid: '', payload: null, tick: null, clock: null, resizeT: null };
 
@@ -739,7 +740,7 @@ window.addEventListener('beforeunload', function (e) { if (S.started && !S.finis
 window.addEventListener('resize', function () { clearTimeout(S.resizeT); S.resizeT = setTimeout(function () { if (S.started && !S.finished) drawQuestion(); }, 200); });
 
 // ---------------------------------------------------------------- boot
-if (S.t && S.code) loadInfo(); else if (S.t || S.code) showLookup(); else showHome();
+if (S.t) showLookup(); else showHome();
 })();
 </script>
 </body>
