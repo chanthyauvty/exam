@@ -142,6 +142,7 @@ var GRADE_CLASS = { 'Auto-Graded': 'bg-[#eef3f9] text-[#2d6cb5]', 'Needs Review'
 var COLORS = { mint: '#22c58b', blue: '#3b82f6', navy: '#16397a', amber: '#f59e0b', rose: '#f43f5e', violet: '#8b5cf6', gray: '#94a3b8' };
 
 var S = { me: null, folders: [], exams: [], filter: '__all__', view: 'list', tab: 'home', set: null, setLoading: false, st: null, ed: null, res: null, gr: null };
+var ADMIN_TAB = ['admin', 'shield-check', 'អ្នកគ្រប់គ្រង'];   // sidebar only (admin); on phones it is opened from Settings
 var TABS = [['home', 'home', 'គេហទំព័រ'], ['exams', 'exam', 'ការប្រឡង'], ['students', 'students', 'សិស្ស'], ['grading', 'grade', 'ដាក់ពិន្ទុ'], ['results', 'results', 'លទ្ធផល'], ['settings', 'settings', 'ការកំណត់']];
 var uidN = 0;
 function uid() { uidN++; return 'k' + uidN; }
@@ -409,6 +410,7 @@ function render() {
     else if (S.tab === 'grading') main.append(viewGradingTab());
     else if (S.tab === 'results') main.append(viewResultsTab());
     else if (S.tab === 'settings') main.append(viewSettings());
+    else if (S.tab === 'admin' && S.me && S.me.is_admin) main.append(viewAdmin());
     else main.append(viewHome());
   }
   else if (S.view === 'editor') main.append(viewEditor());
@@ -421,7 +423,7 @@ function sideNav() {
   var me = S.me || {};
   return h('aside', { class: 'no-print hidden md:flex flex-col gap-1 w-[200px] shrink-0 border-r border-line px-3 py-4 sticky top-0 h-screen overflow-y-auto' },
     h('div', { class: 'lg mx-1.5 mb-5 cursor-pointer', onclick: function () { goList('home'); } }, h('i'), 'ប្រឡងអនឡាញ'),
-    TABS.map(function (t) {
+    TABS.concat(me.is_admin ? [ADMIN_TAB] : []).map(function (t) {
       var active = S.tab === t[0];
       return h('button', { type: 'button', class: 'nav-item' + (active ? ' on' : ''), 'aria-current': active ? 'page' : null, onclick: function () { goList(t[0]); } },
         tile(t[1]), h('span', { class: 'truncate' }, t[2]), (t[0] === 'grading' && pend > 0) ? h('em', null, pend) : null);
@@ -456,9 +458,92 @@ function goList(tab) {
   if (typeof tab === 'string' && tab !== S.tab && tab === 'students') S.st = null;
   if (typeof tab === 'string') S.tab = tab;
   if (S.tab === 'settings') S.set = null;
+  if (S.tab === 'admin') S.adm = null;
   S.view = 'list';
   safe(function () { return reloadAll().then(render); });
   render();
+}
+
+// ============================================================================
+//  ADMIN TAB (only CONFIG.ADMIN_EMAIL; the server checks too)
+// ============================================================================
+function viewAdmin() {
+  var box = h('div', { class: 'space-y-4' });
+  var a = S.adm;
+  function load(fresh) {
+    S.admLoading = true;
+    api('adminOverview', !!fresh).then(function (r) { S.adm = r; S.admLoading = false; render(); })
+      .catch(function (e) { S.admLoading = false; toast(e.message, 'error'); render(); });
+  }
+  if (!a) {
+    if (!S.admLoading) load(false);
+    box.append(h('div', { class: 'bg-white rounded-2xl border border-line p-6 text-center text-slate-500' }, S.admLoading ? 'កំពុងផ្ទុកបញ្ជីគ្រូ… (អាចចំណាយពេលបន្តិច)' : 'មិនអាចផ្ទុកបានទេ។'),
+      S.admLoading ? null : h('div', { class: 'text-center' }, btn('ព្យាយាមម្ដងទៀត', 'primary', function () { load(false); })));
+    return box;
+  }
+  var list = a.teachers.slice().sort(function (x, y) { return String(y.last_active || y.created_at).localeCompare(String(x.last_active || x.created_at)); });
+  var active = list.filter(function (t) { return String(t.status).toLowerCase() === 'active'; }).length;
+  var weekAgo = Date.now() - 7 * 86400000;
+  var recent = list.filter(function (t) { var d = new Date(t.last_active).getTime(); return d && d > weekAgo; }).length;
+  var sum = function (k) { return list.reduce(function (n, t) { return n + (Number(t[k]) || 0); }, 0); };
+
+  box.append(h('div', { class: 'flex flex-wrap items-center justify-between gap-3' },
+    h('div', null, h('h1', { class: 'text-[18px] font-bold' }, 'អ្នកគ្រប់គ្រង'),
+      h('p', { class: 'text-[12.5px] text-muted' }, 'ទិន្នន័យពេល ' + fmtDate(a.generated_at) + ' · ចំនួនក្នុងសន្លឹកនីមួយៗធ្វើបច្ចុប្បន្នភាពរៀងរាល់ ១០ នាទី')),
+    h('div', { class: 'flex flex-wrap gap-2' },
+      btn('↻ ផ្ទុកឡើងវិញ', 'ghost', function () { S.adm = null; load(true); render(); }),
+      h('a', { href: a.master_url, target: '_blank', rel: 'noopener', class: 'px-3 py-1.5 rounded-[10px] text-sm border border-line bg-white hover:bg-navy-50' }, 'បើក Master Sheet'))));
+
+  box.append(h('div', { class: 'grid grid-cols-2 lg:grid-cols-4 gap-3' },
+    statTile('students', 'គ្រូសរុប', list.length, ''),
+    statTile('shield-check', 'កំពុងប្រើបាន (Active)', active, 'text-mint-500'),
+    statTile('clock', 'ចូលប្រើក្នុង ៧ ថ្ងៃចុងក្រោយ', recent, ''),
+    statTile('exam', 'ការប្រឡង / សិស្សដាក់ឆ្លើយ', sum('exams') + ' / ' + sum('submissions'), '')));
+
+  // Search filters the cards in place (no full re-render, so the phone keyboard stays open).
+  var search = h('input', { class: 'inp', placeholder: 'ស្វែងរកឈ្មោះ អ៊ីមែល សាលា ឬ ID…', value: S.admQ || '' });
+  var countEl = h('span');
+  var cardsWrap = h('div');
+  function drawCards() {
+    var q = (S.admQ || '').toLowerCase();
+    var shown = list.filter(function (t) { return !q || (t.full_name + ' ' + t.email + ' ' + t.school_name + ' ' + t.teacher_id).toLowerCase().indexOf(q) >= 0; });
+    countEl.textContent = 'គ្រូ (' + shown.length + (q ? ' / ' + list.length : '') + ')';
+    clear(cardsWrap);
+    cardsWrap.append(shown.length ? teacherCards(shown) : h('p', { class: 'text-sm text-muted' }, 'រកមិនឃើញ។'));
+  }
+  search.addEventListener('input', function () { S.admQ = search.value; drawCards(); });
+  function teacherCards(shown) {
+  return h('div', { class: 'grid md:grid-cols-2 gap-3' }, shown.map(function (t) {
+    var on = String(t.status).toLowerCase() === 'active';
+    var self = S.me && String(t.email).toLowerCase() === String(S.me.email).toLowerCase();
+    var stat = function (label, v) { return h('div', { class: 'bg-navy-50 rounded-lg px-2 py-1.5 text-center' }, h('b', { class: 'block text-[15px]' }, String(v)), h('span', { class: 'block text-[10.5px] text-muted' }, label)); };
+    return h('div', { class: 'bg-white rounded-2xl border border-line p-4' },
+      h('div', { class: 'flex items-start gap-3 mb-3' },
+        h('span', { class: 'tl w-[38px] h-[38px] rounded-full font-bold text-mint-500 shrink-0' }, String(t.full_name || '?').charAt(0)),
+        h('div', { class: 'min-w-0 flex-1' },
+          h('div', { class: 'font-bold truncate' }, t.full_name || '—', self ? h('span', { class: 'text-xs text-muted font-normal' }, ' (អ្នក)') : null),
+          h('div', { class: 'text-xs text-muted truncate' }, t.email),
+          h('div', { class: 'text-xs text-muted truncate' }, (t.school_name || 'មិនទាន់មានសាលា') + ' · ID ' + t.teacher_id)),
+        badge(on ? 'Active' : (t.status || '—'), on ? 'bg-[#e8f8f2] text-[#1fae82]' : 'bg-rose-50 text-rose-600')),
+      t.sheet_ok ? h('div', { class: 'grid grid-cols-4 gap-1.5 mb-3' },
+        stat('ការប្រឡង', t.exams + (t.open_exams ? ' (' + t.open_exams + ' បើក)' : '')), stat('សំណួរ', t.questions), stat('សិស្ស', t.students), stat('ដាក់ឆ្លើយ', t.submissions))
+        : h('div', { class: 'mb-3 p-2 rounded-lg bg-amber-50 text-amber-700 text-xs' }, 'ប្រព័ន្ធមិនអាចបើកសន្លឹកទិន្នន័យរបស់គ្រូនេះបានទេ (ប្រហែលមិនបានចែករំលែកមកអ្នក)។'),
+      h('div', { class: 'flex flex-wrap items-center justify-between gap-2 text-xs text-muted' },
+        h('span', null, 'ចូលចុងក្រោយ៖ ' + (t.last_active ? fmtDate(t.last_active) : 'មិនទាន់កត់ត្រា'), h('br'), 'ចុះឈ្មោះ៖ ' + fmtDate(t.created_at)),
+        h('div', { class: 'flex gap-2' },
+          t.sheet_url ? h('a', { href: t.sheet_url, target: '_blank', rel: 'noopener', class: 'px-3 py-1.5 rounded-[10px] text-sm border border-line bg-white hover:bg-navy-50 text-navy-900' }, 'សន្លឹក') : null,
+          self ? null : btn(on ? 'ផ្អាក' : 'បើកវិញ', on ? 'danger' : 'soft', function () {
+            var next = on ? 'Suspended' : 'Active';
+            confirmBox(on ? 'ផ្អាកគ្រូ' : 'បើកគ្រូវិញ', on ? ('ផ្អាក ' + (t.full_name || t.email) + '? គ្រូនេះនឹងចូលប្រើផ្ទាំងគ្រូមិនបាន (ទិន្នន័យមិនបាត់ទេ)។') : ('អនុញ្ញាតឱ្យ ' + (t.full_name || t.email) + ' ចូលប្រើវិញ?'), on ? 'ផ្អាក' : 'បើកវិញ', on).then(function (ok) {
+              if (!ok) return;
+              safe(function () { return api('adminSetStatus', t.teacher_id, next).then(function () { t.status = next; render(); toast('បានរក្សាទុក'); }); });
+            });
+          }))));
+  }));
+  }
+  drawCards();
+  box.append(sectionCard(countEl, h('div', { class: 'space-y-3' }, search, cardsWrap)));
+  return box;
 }
 
 // ============================================================================
@@ -1115,13 +1200,24 @@ function viewSettings() {
     return box;
   }
   var name = h('input', { class: 'inp', value: s.full_name, maxlength: 100 });
-  var school = h('input', { class: 'inp', value: s.school_name, maxlength: 150 });
+  // School: pick from the list (default = first, e.g. SSW-NGS) or choose "other" and type it.
+  var schools = (s.schools && s.schools.length) ? s.schools : [];
+  var curSchool = s.school_name || schools[0] || '';
+  var isOther = !!curSchool && schools.indexOf(curSchool) < 0;
+  var schoolSel = h('select', { class: 'inp' },
+    schools.map(function (x) { return h('option', { value: x }, x); }),
+    h('option', { value: '__other' }, 'ផ្សេងទៀត…'));
+  schoolSel.value = isOther ? '__other' : curSchool;
+  var schoolOther = h('input', { class: 'inp mt-2', value: isOther ? curSchool : '', maxlength: 150, placeholder: 'វាយឈ្មោះសាលា' });
+  schoolOther.style.display = schoolSel.value === '__other' ? '' : 'none';
+  schoolSel.addEventListener('change', function () { schoolOther.style.display = schoolSel.value === '__other' ? '' : 'none'; if (schoolSel.value === '__other') schoolOther.focus(); });
+  var school = { get value() { return schoolSel.value === '__other' ? schoolOther.value : schoolSel.value; } };
   var key = h('input', { class: 'inp font-mono', type: 'password', autocomplete: 'off', placeholder: s.has_gemini_key ? ('បានរក្សាទុករួច ' + s.gemini_key_hint) : 'បិទភ្ជាប់ Gemini API Key' });
   box.append(
     sectionCard('ព័ត៌មានគណនី', h('div', null,
       h('p', { class: 'text-sm text-slate-500 mb-3' }, s.email + ' · លេខសម្គាល់គ្រូ ' + s.teacher_id),
       field('ឈ្មោះពេញ', name),
-      field('ឈ្មោះសាលា', school),
+      field('ឈ្មោះសាលា', h('div', null, schoolSel, schoolOther)),
       btn('រក្សាទុកព័ត៌មានគណនី', 'primary', function () {
         safe(function () {
           return api('updateProfile', name.value, school.value).then(function (r) {
@@ -1133,6 +1229,10 @@ function viewSettings() {
       h('div', { class: 'mt-4 pt-3 border-t border-line flex flex-wrap items-center justify-between gap-2' },
         h('span', { class: 'text-xs text-muted' }, 'ប្រើឧបករណ៍រួមគ្នា? សូមចាកចេញក្រោយប្រើរួច។'),
         btn('ចាកចេញ', 'danger', logoutNow)))),
+    S.me && S.me.is_admin ? h('div', { class: 'h-4' }) : null,
+    S.me && S.me.is_admin ? sectionCard('អ្នកគ្រប់គ្រង', h('div', { class: 'flex flex-wrap items-center justify-between gap-2' },
+      h('span', { class: 'text-sm text-muted' }, 'មើលឈ្មោះ និងចំនួនគ្រូដែលប្រើប្រព័ន្ធ។'),
+      btn('បើកផ្ទាំងអ្នកគ្រប់គ្រង', 'primary', function () { goList('admin'); }))) : null,
     h('div', { class: 'h-4' }),
     sectionCard('Gemini API Key', h('div', null,
       keyGuide(!s.has_gemini_key),
