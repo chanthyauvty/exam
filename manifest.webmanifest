@@ -1,0 +1,32 @@
+{
+  "id": "/exam/",
+  "name": "ប្រឡងអនឡាញ",
+  "short_name": "ប្រឡងអនឡាញ",
+  "description": "ចូលប្រឡងដោយលេខសម្គាល់ និងកូដប្រឡង",
+  "lang": "km",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f2a4a",
+  "icons": [
+    {
+      "src": "icons/student-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/student-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/student-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

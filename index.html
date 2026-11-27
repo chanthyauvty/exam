@@ -4,6 +4,15 @@
 <base target="_top">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f2a4a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ប្រឡងអនឡាញ">
+<link rel="icon" type="image/png" href="icons/student-32.png">
+<link rel="apple-touch-icon" href="icons/student-apple-180.png">
+<script>if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function () {}); });</script>
 <title>ប្រព័ន្ធប្រឡងអនឡាញ</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config={theme:{extend:{colors:{navy:{DEFAULT:'#0f2a4a',700:'#173b66',500:'#2d6cb5',50:'#f5f7fa'},mint:{DEFAULT:'#3ccf9f',600:'#1fae82',100:'#e8f8f2'},line:'#e6eaf0',muted:'#64748b'}}}};</script>
@@ -110,6 +119,13 @@ html{-webkit-text-size-adjust:100%}
 body{overflow-x:hidden}
 @media (max-width:640px){input,textarea,select{font-size:16px!important}}
 @media print{body{display:none!important}}
+/* ---- App feel + "install as an app" (PWA) ---- */
+html,body{-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none}
+button,nav,.nav-item{-webkit-user-select:none;user-select:none}
+.app-install{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:12px 14px;border:1.5px dashed #3ccf9f;border-radius:16px;background:#f1fbf7;color:#0f2a4a;font:inherit;cursor:pointer}
+.app-install svg{width:34px;height:34px;flex:none}
+.app-install b{display:block;font-size:14px}.app-install small{display:block;font-size:12px;color:#64748b;font-weight:400}
+.app-install-tip{margin-top:8px;font-size:12.5px;color:#475569;background:#f5f7fa;border-radius:12px;padding:10px 12px;line-height:1.8}
 </style>
 </head>
 <body>
@@ -117,6 +133,37 @@ body{overflow-x:hidden}
 <div id="app"></div>
 <div id="wm" style="position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;z-index:40;display:none"></div>
 <div id="modal"></div>
+<script>
+// ---------- Install as an app (PWA) ----------
+// Only the GitHub Pages copy links a manifest (added by build_static.py); on script.google.com the slots stay empty.
+(function () {
+  var evt = null;
+  function standalone() { return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true; }
+  function ios() { return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
+  function available() { return !!document.querySelector('link[rel="manifest"]') && !standalone() && (!!evt || ios()); }
+  function fill(slot) {
+    while (slot.firstChild) slot.removeChild(slot.firstChild);
+    if (!available()) { slot.style.display = 'none'; return; }
+    slot.style.display = '';
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'app-install';
+    b.innerHTML = '<svg viewBox="0 0 24 24"><rect x="5" y="1.5" width="14" height="21" rx="3" fill="#0f2a4a"/><rect x="7" y="4" width="10" height="14" rx="1.5" fill="#fff"/><path d="M12 6.5v7M9 11l3 3 3-3" fill="none" stroke="#1fae82" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      '<span><b>ដំឡើងជាកម្មវិធី</b><small>បន្ថែមរូបតំណាងលើអេក្រង់ដើម ហើយបើកបានភ្លាមៗ ដោយមិនបាច់វាយតំណ</small></span>';
+    var tip = document.createElement('div');
+    tip.className = 'app-install-tip'; tip.style.display = 'none';
+    tip.textContent = 'នៅក្នុង Safari៖ ចុចប៊ូតុង Share (ការ៉េដែលមានព្រួញឡើងលើ) នៅខាងក្រោមអេក្រង់ រួចជ្រើស «Add to Home Screen» (បន្ថែមទៅអេក្រង់ដើម)។';
+    b.addEventListener('click', function () {
+      if (evt) { var e = evt; evt = null; e.prompt(); e.userChoice.then(refresh, refresh); }
+      else tip.style.display = tip.style.display === 'none' ? '' : 'none';
+    });
+    slot.appendChild(b); slot.appendChild(tip);
+  }
+  function refresh() { Array.prototype.forEach.call(document.querySelectorAll('.app-install-slot'), fill); }
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); evt = e; refresh(); });
+  window.addEventListener('appinstalled', function () { evt = null; refresh(); });
+  window.appInstallSlot = function (cls) { var d = document.createElement('div'); d.className = 'app-install-slot ' + (cls || ''); fill(d); return d; };
+})();
+</script>
 <script>
 var BOOT = (function () { var q = new URLSearchParams(location.search); return { t: (q.get('t') || '').slice(0, 40), e: (q.get('e') || '').slice(0, 40), tu: 'https://chanthyauvty.github.io/exam/teacher/', api: 'https://script.google.com/macros/s/AKfycbydkSpA_1thWAAUQxLbzotkpt1e1POAjyuj3OE8AQr7gfl_BR6FPxhkCk285JGShhYB/exec' }; })();
 (function () {
@@ -139,8 +186,12 @@ function h(tag, a, kids) {
   return e;
 }
 
+// Remember the teacher ID: the installed app opens without ?t=, so the field is pre-filled instead.
+function lsGet(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* private mode */ } }
+if (BOOT.t) lsSet('examLastTeacher', BOOT.t);
 // The exam code is never taken from the link: students must type it (the teacher shows it in class).
-var S = { t: BOOT.t || '', code: '', info: null, exam: null, qs: [], ans: {}, cur: 0,
+var S = { t: BOOT.t || lsGet('examLastTeacher'), code: '', info: null, exam: null, qs: [], ans: {}, cur: 0,
   readLeft: {}, strikes: 0, events: [], flags: [], started: false, finished: false, paused: false,
   lockStrike: false, who: null, saver: null, lastSaved: '', fsOK: false, endAt: 0, t0: 0, name: '', sid: '', payload: null, tick: null, clock: null, resizeT: null };
 
@@ -226,7 +277,7 @@ function showError(msg, retry) {
     retry ? h('button', { class: BTN_P + ' w-full', text: 'ព្យាយាមម្ដងទៀត', on: { click: retry } }) : null])]));
 }
 
-// Shared entry page: one link for everyone. Students continue here; teachers go to the teacher app (Google sign-in).
+// Shared entry page: one link for everyone. Students continue here; teachers go to the teacher app (e-mail code sign-in).
 function showHome() {
   var roleBtn = function (ic, title, sub) {
     return [tile(ic), h('div', { class: 'min-w-0 flex-1' }, [h('div', { class: 'font-bold text-[15px]', text: title }), h('div', { class: 'text-[12.5px] text-muted', text: sub })]), h('span', { class: 'text-muted text-lg', text: '›' })];
@@ -234,11 +285,11 @@ function showHome() {
   var cls = 'w-full flex items-center gap-4 text-left rounded-[18px] border px-4 py-4 transition bg-white ';
   var student = h('button', { type: 'button', class: cls + 'border-mint-600 bg-mint-100', on: { click: function () { showLookup(); } } },
     roleBtn('student', 'ខ្ញុំជាសិស្ស', 'ចូលប្រឡងដោយលេខសម្គាល់ និងកូដប្រឡង'));
-  var teacherKids = roleBtn('user', 'ខ្ញុំជាគ្រូ', 'ចូលដោយគណនី Google ដើម្បីបង្កើត និងគ្រប់គ្រងការប្រឡង');
+  var teacherKids = roleBtn('user', 'ខ្ញុំជាគ្រូ', 'ចូលដោយអ៊ីមែល ដើម្បីបង្កើត និងគ្រប់គ្រងការប្រឡង');
   var teacher = BOOT.tu
     ? h('a', { href: BOOT.tu, target: '_top', rel: 'noopener', class: cls + 'border-line hover:bg-navy-50' }, teacherKids)
     : null;
-  mount(card([head('ប្រព័ន្ធប្រឡងអនឡាញ', 'សូមជ្រើសរើសថាអ្នកជានរណា', 'shield-check'), h('div', { class: 'space-y-3' }, [student, teacher])]));
+  mount(card([head('ប្រព័ន្ធប្រឡងអនឡាញ', 'សូមជ្រើសរើសថាអ្នកជានរណា', 'shield-check'), h('div', { class: 'space-y-3' }, [student, teacher, window.appInstallSlot ? window.appInstallSlot('pt-3') : null])]));
 }
 
 function showLookup(msg) {
@@ -261,13 +312,15 @@ function showLookup(msg) {
   mount(card([head('ចូលប្រឡង', 'បញ្ចូលលេខសម្គាល់ និងកូដប្រឡង', 'student'), h('div', { class: 'space-y-3' }, [
     fromLink ? null : tf, sf, cf,
     err, h('button', { class: BTN_P + ' w-full', text: 'បន្ត', on: { click: go } }),
-    fromLink ? null : h('button', { type: 'button', class: 'w-full text-sm text-muted hover:text-navy', text: '← ត្រឡប់ទៅទំព័រដើម', on: { click: showHome } })])]));
+    fromLink ? null : h('button', { type: 'button', class: 'w-full text-sm text-muted hover:text-navy', text: '← ត្រឡប់ទៅទំព័រដើម', on: { click: showHome } }),
+    window.appInstallSlot ? window.appInstallSlot('pt-4') : null])]));
 }
 
 function loadInfo() {
   loading('កំពុងស្វែងរកការប្រឡង…');
   api('getExamInfo', S.t, S.code).then(function (info) {
     S.info = info;
+    lsSet('examLastTeacher', S.t);
     if (info.status === 'Open' && info.uses_roster && S.sid) return confirmStudent(S.sid, true);
     showJoin();
   }).catch(function (e) { if (e.network) showError(e.message, loadInfo); else showLookup(e.message); });

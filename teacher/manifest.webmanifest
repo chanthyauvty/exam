@@ -1,0 +1,32 @@
+{
+  "id": "/exam/teacher/",
+  "name": "ផ្ទាំងគ្រូ – ប្រឡងអនឡាញ",
+  "short_name": "ផ្ទាំងគ្រូ",
+  "description": "បង្កើតការប្រឡង ដាក់ពិន្ទុ និងមើលលទ្ធផល",
+  "lang": "km",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f2a4a",
+  "icons": [
+    {
+      "src": "../icons/teacher-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icons/teacher-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icons/teacher-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
