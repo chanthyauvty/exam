@@ -119,6 +119,49 @@ html{-webkit-text-size-adjust:100%}
 body{overflow-x:hidden}
 @media (max-width:640px){input,textarea,select{font-size:16px!important}}
 @media print{body{display:none!important}}
+/* ---- Landing page ---- */
+.land{min-height:100vh;background:#fff}
+.land-wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.land-top{border-bottom:1px solid #e6eaf0;background:#fff;position:sticky;top:0;z-index:20}
+.land-top .land-wrap{height:64px}
+.land-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
+.land-logo i{width:24px;height:24px;border-radius:7px;background:#0f2a4a;position:relative;flex:none}
+.land-logo i:after{content:'';position:absolute;right:-3px;bottom:-3px;width:11px;height:11px;border-radius:3px;background:#4caf86;border:2px solid #fff}
+.land-ghost{display:inline-flex;align-items:center;height:44px;padding:0 18px;border:1px solid #e6eaf0;border-radius:12px;font-size:14px;font-weight:600;color:#0f2a4a;background:#fff;box-shadow:0 6px 16px -12px rgba(15,42,74,.35)}
+.land-ghost:hover{background:#f5f7fa}
+.land-grid{display:grid;grid-template-columns:1fr;gap:48px;padding-top:40px;padding-bottom:56px}
+@media (min-width:1024px){.land-grid{grid-template-columns:1.05fr 1fr;align-items:center;padding-top:72px;padding-bottom:80px}}
+.land-pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;background:#e8f8f2;color:#0f2a4a;font-size:12.5px;font-weight:600}
+.land-pill i{width:7px;height:7px;border-radius:50%;background:#1fae82}
+.land-title{font-size:56px;line-height:1.35;font-weight:700;margin:18px 0 6px;letter-spacing:-.5px}
+@media (min-width:640px){.land-title{font-size:76px}}
+.land-hl{background:linear-gradient(transparent 60%,#d3f1e6 60%,#d3f1e6 92%,transparent 92%)}
+.land-sub{font-size:17px;color:#64748b;margin:0 0 28px}
+.land-card{background:#fff;border:1px solid #e6eaf0;border-radius:22px;padding:18px 20px 22px;box-shadow:0 24px 48px -30px rgba(15,42,74,.35);max-width:570px}
+.land-tabs{display:inline-flex;gap:4px;padding:4px;border-radius:14px;background:#f5f7fa;border:1px solid #e6eaf0;margin-bottom:16px}
+.land-tab{display:inline-flex;align-items:center;gap:8px;padding:8px 20px;border-radius:10px;border:0;background:transparent;font:inherit;font-size:14px;color:#64748b;cursor:pointer}
+.land-tab svg{width:18px;height:18px}
+.land-tab.on{background:#fff;color:#0f2a4a;font-weight:700;box-shadow:0 4px 12px -6px rgba(15,42,74,.3)}
+.land-row{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:560px){.land-row{grid-template-columns:1fr 1fr auto}}
+.land-inp{width:100%;height:50px;border:1px solid #e6eaf0;border-radius:12px;padding:0 16px;font:inherit;font-size:15px;color:#0f2a4a;background:#fff;outline:none}
+.land-inp:focus{border-color:#0f2a4a;box-shadow:0 0 0 4px rgba(15,42,74,.06)}
+.land-go{height:50px;padding:0 22px;border:0;border-radius:12px;background:linear-gradient(135deg,#173b66,#0f2a4a);color:#fff;font:inherit;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 12px 22px -12px rgba(15,42,74,.7);white-space:nowrap}
+.land-go:active{transform:translateY(1px)}
+.land-feats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:28px;max-width:420px}
+.land-feat{display:flex;flex-direction:column;align-items:center;gap:10px;font-size:13px;color:#475569;text-align:center}
+@media (max-width:420px){.land-feat .tl-lg{width:64px;height:64px;border-radius:19px}.land-title{font-size:50px}}
+.land-art{position:relative;display:none}
+@media (min-width:1024px){.land-art{display:block}}
+.land-panel{background:linear-gradient(160deg,#2b4f7d,#0f2a4a 70%);border-radius:34px;padding:46px 42px}
+.land-mock{background:#fff;border-radius:22px;padding:24px 26px}
+.land-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#1fae82;background:#e8f8f2;border-radius:99px;padding:3px 11px}
+.land-live i{width:7px;height:7px;border-radius:50%;background:#1fae82}
+.land-bars{display:flex;align-items:flex-end;gap:14px;height:150px;padding:20px 0 12px}
+.land-bar{width:100%;border-radius:4px;background:#e2e8f0}.land-bar.on{background:#0f2a4a}
+.land-av{width:32px;height:32px;border-radius:50%;border:1px solid #e6eaf0;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none}
+.land-float{position:absolute;left:-60px;bottom:-34px;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e6eaf0;border-radius:16px;padding:14px 18px;box-shadow:0 20px 40px -22px rgba(15,42,74,.45)}
+.land-spark{width:40px;height:40px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:18px;background:linear-gradient(135deg,#3ccf9f,#1f8fd1)}
 /* ---- App look: soft background, white surfaces, gentle page transition ---- */
 html,body{background:#f4f6fa!important}
 .page-in{animation:pageIn .22s ease-out}
@@ -282,43 +325,87 @@ function showError(msg, retry) {
     retry ? h('button', { class: BTN_P + ' w-full', text: 'ព្យាយាមម្ដងទៀត', on: { click: retry } }) : null])]));
 }
 
-// Shared entry page: one link for everyone. Students continue here; teachers go to the teacher app (e-mail code sign-in).
-function showHome() {
-  var roleBtn = function (ic, title, sub) {
-    return [tile(ic), h('div', { class: 'min-w-0 flex-1' }, [h('div', { class: 'font-bold text-[15px]', text: title }), h('div', { class: 'text-[12.5px] text-muted', text: sub })]), h('span', { class: 'text-muted text-lg', text: '›' })];
-  };
-  var cls = 'w-full flex items-center gap-4 text-left rounded-[18px] border px-4 py-4 transition bg-white ';
-  var student = h('button', { type: 'button', class: cls + 'border-mint-600 bg-mint-100', on: { click: function () { showLookup(); } } },
-    roleBtn('student', 'ខ្ញុំជាសិស្ស', 'ចូលប្រឡងដោយលេខសម្គាល់ និងកូដប្រឡង'));
-  var teacherKids = roleBtn('user', 'ខ្ញុំជាគ្រូ', 'ចូលដោយអ៊ីមែល ដើម្បីបង្កើត និងគ្រប់គ្រងការប្រឡង');
-  var teacher = BOOT.tu
-    ? h('a', { href: BOOT.tu, target: '_top', rel: 'noopener', class: cls + 'border-line hover:bg-navy-50' }, teacherKids)
-    : null;
-  mount(card([head('ប្រព័ន្ធប្រឡងអនឡាញ', 'សូមជ្រើសរើសថាអ្នកជានរណា', 'shield-check'), h('div', { class: 'space-y-3' }, [student, teacher, window.appInstallSlot ? window.appInstallSlot('pt-3') : null])]));
-}
-
-function showLookup(msg) {
-  var fromLink = !!BOOT.t;   // QR code / link already carries the teacher ID
-  var t = h('input', { class: INP, placeholder: 'ឧ. TLT9SF', value: S.t, autocomplete: 'off' });
-  var sid = h('input', { class: INP, placeholder: 'ឧ. 012', value: S.sid, maxlength: '40', autocomplete: 'off' });
-  var c = h('input', { class: INP, placeholder: 'ឧ. ABC234', value: S.code, autocomplete: 'off' });
-  var err = h('div', { class: 'text-rose-600 text-sm', text: msg || '' });
+// Landing / entry page (one page for everyone): hero + sign-in card (tabs សិស្ស | គ្រូ) + illustration.
+// Students type ID + exam code; the teacher ID comes from the QR link (?t=), the last one used, or a field.
+function showHome(msg) { showLanding(msg, 'student'); }
+function showLookup(msg) { showLanding(msg, 'student'); }
+function showLanding(msg, tab) {
+  tab = tab || 'student';
+  var fromLink = !!BOOT.t;
+  var askTeacher = !S.t || S.editT;
+  var t = h('input', { class: 'land-inp', placeholder: 'លេខកូដគ្រូ (ឧ. TLT9SF)', value: S.t, autocomplete: 'off', 'aria-label': 'លេខកូដគ្រូ' });
+  var sid = h('input', { class: 'land-inp', placeholder: 'លេខសម្គាល់សិស្ស', value: S.sid, maxlength: '40', autocomplete: 'off', 'aria-label': 'លេខសម្គាល់សិស្ស' });
+  var c = h('input', { class: 'land-inp', placeholder: 'កូដប្រឡង', value: S.code, autocomplete: 'off', 'aria-label': 'កូដប្រឡង' });
+  c.style.textTransform = 'uppercase'; c.style.letterSpacing = '.06em';
+  var err = h('div', { class: 'text-rose-600 text-sm mt-3', text: msg || '' });
+  if (!msg) err.style.display = 'none';
   var go = function () {
-    S.t = t.value.trim(); S.code = c.value.trim(); S.sid = sid.value.trim(); S.who = null;
-    if (!S.t) { err.textContent = 'សូមបញ្ចូលលេខកូដគ្រូ។'; return; }
-    if (!S.sid) { err.textContent = 'សូមបញ្ចូលលេខសម្គាល់សិស្ស។'; return; }
-    if (!S.code) { err.textContent = 'សូមបញ្ចូលលេខកូដការប្រឡង។'; return; }
+    S.t = (askTeacher ? t.value : S.t).trim(); S.code = c.value.trim(); S.sid = sid.value.trim(); S.who = null;
+    var m = !S.t ? 'សូមបញ្ចូលលេខកូដគ្រូ។' : !S.sid ? 'សូមបញ្ចូលលេខសម្គាល់សិស្ស។' : !S.code ? 'សូមបញ្ចូលកូដប្រឡង។' : '';
+    if (m) { err.textContent = m; err.style.display = ''; return; }
+    S.editT = false;
     loadInfo();
   };
-  c.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') go(); });
-  t.setAttribute('placeholder', 'លេខកូដគ្រូ (ឧ. TLT9SF)'); sid.setAttribute('placeholder', 'លេខសម្គាល់សិស្ស (ID)'); c.setAttribute('placeholder', 'កូដប្រឡង');
-  var tf = fieldIcon('user', t), sf = fieldIcon('student', sid), cf = fieldIcon('lock-code', c);
-  c.style.textTransform = 'uppercase'; c.style.letterSpacing = '.08em';
-  mount(card([head('ចូលប្រឡង', 'បញ្ចូលលេខសម្គាល់ និងកូដប្រឡង', 'student'), h('div', { class: 'space-y-3' }, [
-    fromLink ? null : tf, sf, cf,
-    err, h('button', { class: BTN_P + ' w-full', text: 'បន្ត', on: { click: go } }),
-    fromLink ? null : h('button', { type: 'button', class: 'w-full text-sm text-muted hover:text-navy', text: '← ត្រឡប់ទៅទំព័រដើម', on: { click: showHome } }),
-    window.appInstallSlot ? window.appInstallSlot('pt-4') : null])]));
+  [t, sid, c].forEach(function (x) { x.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') go(); }); });
+
+  var tabBtn = function (key, ic, label) {
+    return h('button', { type: 'button', class: 'land-tab' + (tab === key ? ' on' : ''), 'aria-pressed': tab === key ? 'true' : 'false', on: { click: function () { if (tab !== key) showLanding('', key); } } }, [icon(ic), label]);
+  };
+  var form;
+  if (tab === 'student') {
+    form = h('div', null, [
+      askTeacher ? h('div', { class: 'mb-3' }, [t]) : null,
+      h('div', { class: 'land-row' }, [sid, c, h('button', { type: 'button', class: 'land-go', text: 'ចូលប្រឡង', on: { click: go } })]),
+      (!askTeacher && !fromLink) ? h('div', { class: 'text-[12.5px] text-muted mt-3' }, ['លេខកូដគ្រូ៖ ', h('b', { class: 'text-navy', text: S.t }), ' · ',
+        h('button', { type: 'button', class: 'underline', text: 'ប្ដូរ', on: { click: function () { S.editT = true; showLanding('', 'student'); } } })]) : null,
+      err]);
+  } else {
+    form = h('div', null, [
+      h('p', { class: 'text-[14px] text-muted mb-4 leading-7', text: 'បង្កើតការប្រឡង បញ្ចូលបញ្ជីសិស្ស ដាក់ពិន្ទុ និងមើលលទ្ធផល។ ចូលដោយអ៊ីមែលរបស់អ្នក (ប្រព័ន្ធផ្ញើកូដ ៦ ខ្ទង់)។' }),
+      BOOT.tu ? h('a', { href: BOOT.tu, target: '_top', rel: 'noopener', class: 'land-go inline-flex items-center justify-center w-full sm:w-auto', text: 'ចូលផ្ទាំងគ្រូ →' }) : null]);
+  }
+  var cardEl = h('div', { class: 'land-card' }, [h('div', { class: 'land-tabs' }, [tabBtn('student', 'student', 'សិស្ស'), tabBtn('teacher', 'user', 'គ្រូ')]), form]);
+
+  var feat = function (ic, label) { return h('div', { class: 'land-feat' }, [tile(ic, 'tl-lg'), h('span', { text: label })]); };
+  var left = h('div', { class: 'land-left' }, [
+    h('span', { class: 'land-pill' }, [h('i'), 'សម្រាប់សាលារៀន និងគ្រូបង្រៀន']),
+    h('h1', { class: 'land-title' }, ['ប្រឡង', h('span', { class: 'land-hl', text: 'អនឡាញ' })]),
+    h('p', { class: 'land-sub', text: 'បញ្ចូលលេខកូដ ហើយចាប់ផ្ដើមប្រឡង។' }),
+    cardEl,
+    h('div', { class: 'land-feats' }, [feat('shield-check', 'ការពារការបន្លំ'), feat('bolt', 'ពិន្ទុភ្លាមៗ'), feat('phone', 'ប្រឡងលើទូរស័ព្ទ')]),
+    window.appInstallSlot ? window.appInstallSlot('mt-6 max-w-[570px]') : null]);
+
+  var top = h('header', { class: 'land-top' }, [h('div', { class: 'land-wrap flex items-center justify-between' }, [
+    h('div', { class: 'land-logo' }, [h('i'), 'ប្រឡងអនឡាញ']),
+    BOOT.tu ? h('a', { href: BOOT.tu, target: '_top', rel: 'noopener', class: 'land-ghost', text: 'ចូលជាគ្រូ' }) : null])]);
+  var page = h('div', { class: 'land page-in' }, [top, h('main', { class: 'land-wrap land-grid' }, [left, landArt()])]);
+  mount(page);
+  if (tab === 'student') setTimeout(function () { try { (askTeacher && !t.value ? t : (!sid.value ? sid : c)).focus({ preventScroll: true }); } catch (e) { /* ignore */ } }, 50);
+}
+
+// Decorative illustration (sample numbers, desktop/tablet only): what a teacher sees live.
+function landArt() {
+  var pct = 36 / 40, R = 44, C = 2 * Math.PI * R;
+  var ring = '<svg viewBox="0 0 110 110" width="104" height="104" aria-hidden="true"><circle cx="55" cy="55" r="' + R + '" fill="none" stroke="#eef2f6" stroke-width="10"/>' +
+    '<circle cx="55" cy="55" r="' + R + '" fill="none" stroke="#4caf86" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + (C * pct).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 55 55)"/></svg>';
+  var ringEl = h('span'); ringEl.innerHTML = ring;
+  var bars = [[14, '០–២'], [28, '៣–៤'], [52, '៥–៦'], [84, '៧–៨', 1], [40, '៩–១០']];
+  var rows = [['ហ', 'ហេង ស្រីនិច', 'ទើបតែ', '១០'], ['ល', 'លី សុវណ្ណ', '១ នាទីមុន', '៨'], ['ច', 'ចាន់ ម៉ានិត', '២ នាទីមុន', '៧']];
+  return h('div', { class: 'land-art', 'aria-hidden': 'true' }, [
+    h('div', { class: 'land-panel' }, [h('div', { class: 'land-mock' }, [
+      h('div', { class: 'flex items-center justify-between mb-4' }, [h('b', { class: 'text-[15px]', text: 'លទ្ធផលផ្ទាល់' }), h('span', { class: 'land-live' }, [h('i'), 'ផ្ទាល់'])]),
+      h('div', { class: 'flex items-center gap-6 pb-5 border-b border-line' }, [ringEl, h('div', null, [
+        h('div', null, [h('b', { class: 'text-[34px] leading-none', text: '៣៦' }), h('span', { class: 'text-muted text-[15px]', text: ' / ៤០' })]),
+        h('div', { class: 'text-[13px] text-muted mt-1', text: 'សិស្សបានដាក់ចម្លើយ' }),
+        h('div', { class: 'text-[12.5px] text-muted mt-0.5' }, ['មធ្យម ', h('b', { class: 'text-navy', text: '៧.៨' }), ' / ១០'])])]),
+      h('div', { class: 'land-bars' }, bars.map(function (b) {
+        return h('div', { class: 'flex-1 flex flex-col items-center gap-2' }, [h('div', { class: 'land-bar' + (b[2] ? ' on' : ''), style: 'height:' + b[0] + 'px' }), h('span', { class: 'text-[11px] text-muted', text: b[1] })]);
+      })),
+      h('div', { class: 'pt-3 border-t border-line space-y-3' }, rows.map(function (r) {
+        return h('div', { class: 'flex items-center gap-3 text-[13.5px]' }, [h('span', { class: 'land-av', text: r[0] }), h('span', { class: 'flex-1', text: r[1] }),
+          h('span', { class: 'text-[11.5px] text-muted', text: r[2] }), h('b', { class: 'w-14 text-right', text: r[3] + ' / ១០' })]);
+      }))])]),
+    h('div', { class: 'land-float' }, [h('span', { class: 'land-spark', text: '✦' }), h('div', null, [h('b', { class: 'block text-[14px]', text: 'AI បង្កើតសំណួរ' }), h('span', { class: 'text-[12px] text-muted', text: '១០ សំណួរពីមេរៀន «កោសិកា»' })])])]);
 }
 
 function loadInfo() {
@@ -798,7 +885,7 @@ window.addEventListener('beforeunload', function (e) { if (S.started && !S.finis
 window.addEventListener('resize', function () { clearTimeout(S.resizeT); S.resizeT = setTimeout(function () { if (S.started && !S.finished) drawQuestion(); }, 200); });
 
 // ---------------------------------------------------------------- boot
-if (S.t) showLookup(); else showHome();
+showLanding();
 })();
 </script>
 </body>
