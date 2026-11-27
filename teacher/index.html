@@ -159,6 +159,32 @@ body{background:#f4f6fa!important}
 .tbar{display:flex;flex-wrap:wrap;gap:8px}
 @media (max-width:767px){.tbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 4px}.tbar::-webkit-scrollbar{display:none}.tbar>*{flex:none;white-space:nowrap}}
 .fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:35;border-radius:99px;padding:12px 20px;box-shadow:0 12px 24px -10px rgba(15,42,74,.55)}
+/* ---- Teacher home (clean, landing-page style) ---- */
+.hm-pill{display:inline-flex;align-items:center;gap:8px;padding:5px 13px;border-radius:99px;background:#e8f8f2;color:#0f2a4a;font-size:12.5px;font-weight:600}
+.hm-pill i{width:7px;height:7px;border-radius:50%;background:#1fae82}
+.hm-title{font-size:32px;line-height:1.45;font-weight:700;margin:12px 0 2px;letter-spacing:-.3px}
+@media (min-width:768px){.hm-title{font-size:42px}}
+.hm-hl{background:linear-gradient(transparent 58%,#d3f1e6 58%,#d3f1e6 90%,transparent 90%)}
+.hm-sub{font-size:15px;color:#64748b;margin:0}
+.hm-card{background:#fff;border:1px solid #e6eaf0;border-radius:22px;box-shadow:0 24px 48px -34px rgba(15,42,74,.35)}
+.hm-btn{min-height:48px!important;padding:0 20px!important;border-radius:12px!important;font-size:15px!important;font-weight:700}
+.hm-stats{display:grid;grid-template-columns:repeat(2,1fr);overflow:hidden}
+@media (min-width:640px){.hm-stats{grid-template-columns:repeat(4,1fr)}}
+.hm-stat{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:16px 20px;border:0;background:none;font:inherit;text-align:left;cursor:pointer;color:#0f2a4a}
+.hm-stat b{font-size:28px;line-height:1.2;font-weight:700}.hm-stat span{font-size:12.5px;color:#64748b}
+.hm-stat:hover{background:#f8fafc}
+.hm-stats .hm-stat:nth-child(odd){border-right:1px solid #eef2f6}
+.hm-stats .hm-stat:nth-child(-n+2){border-bottom:1px solid #eef2f6}
+@media (min-width:640px){.hm-stats .hm-stat{border-bottom:0!important;border-right:1px solid #eef2f6}.hm-stats .hm-stat:last-child{border-right:0}}
+.hm-row{display:flex;align-items:center;gap:12px;padding:14px 2px;border-top:1px solid #eef2f6;cursor:pointer}
+.hm-row:first-child{border-top:0}
+.hm-row:active{opacity:.7}
+.hm-dot{width:9px;height:9px;border-radius:50%;flex:none}
+.hm-count{font-size:11.5px;font-weight:700;background:#eef2f6;color:#0f2a4a;border-radius:99px;padding:0 8px}
+.hm-qr{flex:none;height:38px;padding:0 14px;border-radius:10px;border:0;background:linear-gradient(135deg,#173b66,#0f2a4a);color:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.hm-go{flex:none;font-size:13px;font-weight:700;color:#d97706}
+.hm-chev{flex:none;font-size:20px;color:#94a3b8}
+.hm-num{width:30px;height:30px;border-radius:50%;background:#e8f8f2;color:#167f5f;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex:none}
 /* ---- App feel + "install as an app" (PWA) ---- */
 html,body{-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none}
 button,nav,.nav-item{-webkit-user-select:none;user-select:none}
@@ -668,57 +694,83 @@ function examRow(e, actions) {
 function emptyBox(text) { return h('div', { class: 'border border-dashed border-line rounded-xl p-6 text-center text-sm text-muted' }, text); }
 
 function viewHome() {
+  // Clean home in the style of the landing / sign-in page: big greeting, one action card, one stats card, flat lists.
   var open = S.exams.filter(function (e) { return e.status === 'Open'; });
   var pend = pendingTotal();
   var subs = S.exams.reduce(function (n, e) { return n + (e.submission_count || 0); }, 0);
   var needs = S.exams.filter(function (e) { return e.pending_count > 0; });
   var recent = S.exams.slice(-4).reverse();
-  var name = S.me && S.me.full_name ? S.me.full_name : '';
-  var wrap = h('div', { class: 'space-y-4' });
+  var me = S.me || {};
+  var wrap = h('div', { class: 'hm space-y-5 max-w-4xl' });
 
-  wrap.append(h('div', { class: 'flex flex-wrap items-center justify-between gap-3' },
-    h('div', { class: 'min-w-0' },
-      h('h1', { class: 'text-[18px] font-bold' }, name ? ('សួស្តី ' + name) : 'សូមស្វាគមន៍'),
-      h('p', { class: 'text-[12.5px] text-muted' }, open.length ? ('ថ្ងៃនេះមានការប្រឡង ' + open.length + ' កំពុងបើក') : ((S.me && S.me.school_name) ? S.me.school_name : 'គ្រប់គ្រងការប្រឡង ដាក់ពិន្ទុ និងតាមដានលទ្ធផលសិស្សនៅទីនេះ។'))),
-    h('div', { class: 'grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex' },
-      btn('+ ថតថ្មី', 'ghost', function () { folderModal(null); }, 'py-2'),
-      btn('+ ការប្រឡងថ្មី', 'primary', function () { examModal(null); }, 'py-2'))));
+  var sub = !S.exams.length ? 'បង្កើតការប្រឡងដំបូងរបស់អ្នក ហើយចែករំលែកទៅសិស្សតាម QR។'
+    : open.length ? ('ថ្ងៃនេះមានការប្រឡង ' + open.length + ' កំពុងបើក' + (pend ? ' · រង់ចាំពិនិត្យ ' + pend : '') + '។')
+    : (pend ? ('មានចម្លើយ ' + pend + ' រង់ចាំការពិនិត្យរបស់អ្នក។') : 'មិនមានការប្រឡងកំពុងបើកទេ។');
+  wrap.append(h('div', { class: 'pt-1' },
+    h('span', { class: 'hm-pill' }, h('i'), me.school_name || 'ផ្ទាំងគ្រូ'),
+    h('h1', { class: 'hm-title' }, 'សួស្តី ', h('span', { class: 'hm-hl' }, me.full_name || 'លោកគ្រូ អ្នកគ្រូ')),
+    h('p', { class: 'hm-sub' }, sub)));
+
+  wrap.append(h('div', { class: 'hm-card p-4 sm:p-5' },
+    h('div', { class: 'grid grid-cols-[1fr_auto] sm:flex gap-2.5' },
+      btn('+ ការប្រឡងថ្មី', 'primary', function () { examModal(null); }, 'hm-btn'),
+      btn('+ ថតថ្មី', 'ghost', function () { folderModal(null); }, 'hm-btn'),
+      open.length === 1 ? btn('▣ បង្ហាញ QR', 'soft', function () { presentQR(open[0]); }, 'hm-btn col-span-2 sm:col-span-1') : null)));
   if (window.appInstallSlot) wrap.append(window.appInstallSlot('md:hidden'));   // phones only; hides itself when installed / not possible
 
-  wrap.append(h('div', { class: 'grid grid-cols-2 lg:grid-cols-4 gap-3' },
-    statTile('exam', 'ការប្រឡងសរុប', S.exams.length, '', function () { goList('exams'); }),
-    statTile('open', 'កំពុងបើក', open.length, 'text-mint-500', function () { goList('exams'); }),
-    statTile('students', 'ការដាក់ឆ្លើយសរុប', subs, '', function () { goList('results'); }),
-    statTile('clock', 'រង់ចាំពិនិត្យ', pend, pend > 0 ? 'text-[#d97706]' : '', function () { goList('grading'); })));
+  var stat = function (value, label, tone, onclick) {
+    return h('button', { type: 'button', class: 'hm-stat', onclick: onclick },
+      h('b', { class: tone || '' }, String(value)), h('span', null, label));
+  };
+  wrap.append(h('div', { class: 'hm-card hm-stats' },
+    stat(S.exams.length, 'ការប្រឡង', '', function () { goList('exams'); }),
+    stat(open.length, 'កំពុងបើក', 'text-mint-500', function () { goList('exams'); }),
+    stat(subs, 'ការដាក់ឆ្លើយ', '', function () { goList('results'); }),
+    stat(pend, 'រង់ចាំពិនិត្យ', pend > 0 ? 'text-[#d97706]' : '', function () { goList('grading'); })));
 
   if (!S.exams.length) {
     var step = function (n, t, d) {
-      return h('li', { class: 'flex gap-3' },
-        h('span', { class: 'tl tl-sm font-bold text-mint-500' }, n),
-        h('div', null, h('div', { class: 'font-semibold' }, t), h('div', { class: 'text-sm text-slate-500' }, d)));
+      return h('li', { class: 'flex gap-3 py-3 border-t border-[#eef2f6] first:border-0' },
+        h('span', { class: 'hm-num' }, n),
+        h('div', null, h('div', { class: 'font-semibold' }, t), h('div', { class: 'text-sm text-muted' }, d)));
     };
-    wrap.append(sectionCard('ចាប់ផ្ដើមយ៉ាងដូចម្ដេច?', h('ol', { class: 'space-y-3' },
+    wrap.append(hmSection('ចាប់ផ្ដើមយ៉ាងដូចម្ដេច?', null, h('ol', { class: 'px-1' },
       step('១', 'បង្កើតការប្រឡង', 'ចុច «+ ការប្រឡងថ្មី» ហើយកំណត់ចំណងជើង និងរយៈពេល។'),
-      step('២', 'បន្ថែមសំណួរ', 'វាយដោយខ្លួនឯង ឬឱ្យ AI ជួយបង្កើតពីមេរៀនរបស់អ្នក។'),
-      step('៣', 'បើក និងចែករំលែក', 'បើកការប្រឡង រួចផ្ញើតំណ ឬកូដប្រឡងទៅសិស្ស។'))));
+      step('២', 'បន្ថែមសំណួរ', 'វាយដោយខ្លួនឯង បញ្ចូលពី Excel ឬនាំចូលសំណួរពី AI។'),
+      step('៣', 'បើក និងបង្ហាញ QR', 'បើកការប្រឡង រួចបង្ហាញ QR ឱ្យសិស្សស្កេន។'))));
     return wrap;
   }
 
-  var cols = h('div', { class: 'grid lg:grid-cols-2 gap-4' });
-  cols.append(sectionCard('ការប្រឡងកំពុងបើក',
-    open.length ? h('div', { class: 'space-y-2' }, open.map(function (e) {
-      return examRow(e, [btn('▣ បង្ហាញ QR', 'primary', function () { presentQR(e); }), btn('ចែករំលែក', 'soft', function () { shareModal(e); }), btn('លទ្ធផល', 'ghost', function () { openResults(e); })]);
-    })) : emptyBox('មិនមានការប្រឡងណាកំពុងបើកទេ។')));
-  cols.append(sectionCard('រង់ចាំដាក់ពិន្ទុ',
-    needs.length ? h('div', { class: 'space-y-2' }, needs.map(function (e) {
-      return examRow(e, btn('ដាក់ពិន្ទុ', 'primary', function () { openGrader(e); }));
-    })) : emptyBox('គ្មានអ្វីត្រូវពិនិត្យទេ 🎉')));
+  var cols = h('div', { class: 'grid lg:grid-cols-2 gap-5' });
+  cols.append(hmSection('កំពុងបើក', open.length,
+    open.length ? open.map(function (e) {
+      return hmRow(e, 'កូដ ' + e.exam_code + ' · ' + e.submission_count + ' ការដាក់ឆ្លើយ', function () { openResults(e); },
+        h('button', { type: 'button', class: 'hm-qr', title: 'បង្ហាញ QR', onclick: function (ev) { ev.stopPropagation(); presentQR(e); } }, '▣ QR'));
+    }) : hmEmpty('មិនមានការប្រឡងណាកំពុងបើកទេ។')));
+  cols.append(hmSection('រង់ចាំដាក់ពិន្ទុ', needs.length,
+    needs.length ? needs.map(function (e) {
+      return hmRow(e, e.pending_count + ' ចម្លើយរង់ចាំពិនិត្យ', function () { openGrader(e); }, h('span', { class: 'hm-go' }, 'ដាក់ពិន្ទុ ›'));
+    }) : hmEmpty('គ្មានអ្វីត្រូវពិនិត្យទេ 🎉')));
   wrap.append(cols);
-  wrap.append(sectionCard('ការប្រឡងថ្មីៗ', h('div', { class: 'space-y-2' }, recent.map(function (e) {
-    return examRow(e, btn('កែសំណួរ', 'navy', function () { openEditor(e); }));
-  })), btn('មើលទាំងអស់', 'ghost', function () { goList('exams'); })));
+  wrap.append(hmSection('ការប្រឡងថ្មីៗ', null, recent.map(function (e) {
+    return hmRow(e, (STATUS_LABEL[e.status] || e.status) + ' · ' + e.question_count + ' សំណួរ', function () { openEditor(e); }, h('span', { class: 'hm-chev' }, '›'));
+  }), h('button', { type: 'button', class: 'text-sm font-semibold text-navy-500', onclick: function () { goList('exams'); } }, 'មើលទាំងអស់ ›')));
   return wrap;
 }
+function hmSection(title, count, body, action) {
+  return h('section', null,
+    h('div', { class: 'flex items-center justify-between gap-2 mb-2 px-1' },
+      h('h2', { class: 'font-bold text-[15px] flex items-center gap-2' }, title, count ? h('span', { class: 'hm-count' }, count) : null), action || null),
+    h('div', { class: 'hm-card px-4' }, body));
+}
+function hmRow(e, meta, onclick, right) {
+  var dot = { Open: '#1fae82', Draft: '#2d6cb5', Closed: '#94a3b8' }[e.status] || '#94a3b8';
+  return h('div', { class: 'hm-row', role: 'button', tabindex: '0', onclick: onclick, onkeydown: function (ev) { if (ev.key === 'Enter') onclick(); } },
+    h('span', { class: 'hm-dot', style: 'background:' + dot }),
+    h('div', { class: 'min-w-0 flex-1' }, h('div', { class: 'font-semibold truncate' }, e.title), h('div', { class: 'text-[12.5px] text-muted truncate' }, meta)),
+    right || null);
+}
+function hmEmpty(text) { return h('div', { class: 'py-7 text-center text-sm text-muted' }, text); }
 
 function viewGradingTab() {
   var list = S.exams.filter(function (e) { return e.submission_count > 0; })
