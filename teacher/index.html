@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0f2a4a">
+<meta name="theme-color" content="#ffffff">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -130,6 +130,35 @@ body{font-family:"Noto Sans Khmer","Khmer OS Battambang",system-ui,sans-serif;ba
   .pre { white-space: pre-wrap; word-break: break-word; }
   @media print { header, aside, .no-print, #busy, #toasts { display: none !important; } body { background: #fff; } }
 
+/* ---- App look (soft background, white surfaces, app bar, bottom sheet, page transition) ---- */
+body{background:#f4f6fa!important}
+.appbar{background:rgba(255,255,255,.92);-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px)}
+.appbar-btn{width:38px;height:38px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;color:#0f2a4a;font-size:20px;cursor:pointer}
+.appbar-btn:active{background:#eef2f7}
+.avatar{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:#fff;background:linear-gradient(135deg,#3ccf9f,#1f8fd1);border:0;cursor:pointer;flex:none}
+.bnav{background:rgba(255,255,255,.94);-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px);box-shadow:0 -6px 20px -14px rgba(15,42,74,.35)}
+.bnav .pill{display:flex;align-items:center;justify-content:center;width:52px;height:28px;border-radius:99px;transition:background .2s}
+.bnav [aria-current="page"] .pill{background:#e8f8f2}
+.bnav [aria-current="page"] svg{transform:scale(1.08)}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:0 -16px;padding:2px 16px 4px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:99px;border:1px solid #e6eaf0;background:#fff;font-size:13px;color:#0f2a4a;white-space:nowrap;cursor:pointer}
+.chip.on{background:#0f2a4a;border-color:#0f2a4a;color:#fff;font-weight:600}
+.chip i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.chip small{opacity:.7;font-size:11px}
+.page-in{animation:pageIn .22s ease-out}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sheet-in{animation:sheetIn .25s cubic-bezier(.2,.9,.3,1)}
+@keyframes sheetIn{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+@media (max-width:639px){.sheet{border-radius:22px 22px 0 0!important;margin:0!important;max-height:92vh;overflow-y:auto}}
+.grab{width:40px;height:4px;border-radius:9px;background:#d5dde8;margin:8px auto 0}
+.act{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 4px;border-radius:12px;border:1px solid #e6eaf0;background:#fff;font-size:12px;color:#0f2a4a;cursor:pointer;min-height:56px;line-height:1.3;text-align:center}
+.act:active{background:#f5f7fa}.act b{font-size:17px;line-height:1;font-weight:400}
+.act.pri{background:#0f2a4a;border-color:#0f2a4a;color:#fff}.act.ok{background:#e8f8f2;border-color:#bfeedd;color:#167f5f}.act.bad{background:#fff;border-color:#fecdd3;color:#e11d48}
+@media (prefers-reduced-motion:reduce){.page-in,.sheet-in{animation:none}}
+.tbar{display:flex;flex-wrap:wrap;gap:8px}
+@media (max-width:767px){.tbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 4px}.tbar::-webkit-scrollbar{display:none}.tbar>*{flex:none;white-space:nowrap}}
+.fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:35;border-radius:99px;padding:12px 20px;box-shadow:0 12px 24px -10px rgba(15,42,74,.55)}
 /* ---- App feel + "install as an app" (PWA) ---- */
 html,body{-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none}
 button,nav,.nav-item{-webkit-user-select:none;user-select:none}
@@ -373,9 +402,9 @@ function field(label, input, hint) {
 }
 function modal(title, body, buttons, opts) {
   opts = opts || {};
-  var overlay = h('div', { class: 'fixed inset-0 z-[60] bg-navy-900/55 backdrop-blur-sm flex items-start justify-center p-3 overflow-y-auto' });
+  var overlay = h('div', { class: 'fixed inset-0 z-[60] bg-navy-900/55 backdrop-blur-sm flex items-end sm:items-start justify-center p-0 sm:p-3 overflow-y-auto' });   // no tap-outside close: forms (AI import, questions) must not be lost by a stray tap
   function close() { overlay.remove(); }
-  var foot = h('div', { class: 'flex flex-wrap justify-end gap-2 px-5 py-3 border-t border-line rounded-b-[22px]' });
+  var foot = h('div', { class: 'flex flex-wrap justify-end gap-2 px-5 py-3 border-t border-line rounded-b-[22px] sticky bottom-0 bg-white', style: 'padding-bottom:max(12px, env(safe-area-inset-bottom))' });
   (buttons || []).forEach(function (b) {
     var el = btn(b.label, b.kind, function () {
       el.disabled = true;
@@ -385,7 +414,8 @@ function modal(title, body, buttons, opts) {
     });
     foot.append(el);
   });
-  var box = h('div', { class: 'bg-white rounded-[22px] shadow-2xl w-full my-6 ' + (opts.wide ? 'max-w-3xl' : 'max-w-lg') },
+  var box = h('div', { class: 'sheet sheet-in bg-white rounded-[22px] shadow-2xl w-full my-6 ' + (opts.wide ? 'max-w-3xl' : 'max-w-lg') },
+    h('div', { class: 'grab sm:hidden' }),
     h('div', { class: 'flex items-center justify-between px-5 py-3 border-b border-line' },
       h('h3', { class: 'font-bold text-navy-900' }, title),
       h('button', { type: 'button', class: 'text-slate-400 hover:text-navy-900 text-xl leading-none', onclick: close }, '✕')),
@@ -451,7 +481,9 @@ function render() {
   var root = $('#app');
   clear(root);
   root.className = 'md:flex min-h-screen';
-  var main = h('main', { class: 'max-w-6xl mx-auto px-4 md:px-6 py-5 pb-28 md:pb-8' });
+  var key = S.view + '|' + S.tab;
+  var main = h('main', { class: 'max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6 pb-28 md:pb-8' + (key !== S.lastKey ? ' page-in' : '') });
+  if (key !== S.lastKey) { S.lastKey = key; try { window.scrollTo(0, 0); } catch (e) { /* ignore */ } }
   root.append(sideNav(), h('div', { class: 'flex-1 min-w-0' }, topBar(), main), bottomNav());
   if (S.view === 'list') {
     if (S.tab === 'exams') main.append(viewList());
@@ -470,7 +502,7 @@ function pendingTotal() { return S.exams.reduce(function (n, e) { return n + (e.
 function sideNav() {
   var pend = pendingTotal();
   var me = S.me || {};
-  return h('aside', { class: 'no-print hidden md:flex flex-col gap-1 w-[200px] shrink-0 border-r border-line px-3 py-4 sticky top-0 h-screen overflow-y-auto' },
+  return h('aside', { class: 'no-print hidden md:flex flex-col gap-1 w-[210px] shrink-0 border-r border-line bg-white px-3 py-4 sticky top-0 h-screen overflow-y-auto' },
     h('div', { class: 'lg mx-1.5 mb-5 cursor-pointer', onclick: function () { goList('home'); } }, h('i'), 'ប្រឡងអនឡាញ'),
     TABS.concat(me.is_admin ? [ADMIN_TAB] : []).map(function (t) {
       var active = S.tab === t[0];
@@ -481,18 +513,31 @@ function sideNav() {
       h('span', { class: 'tl w-[30px] h-[30px] rounded-full font-bold text-mint-500' }, String(me.full_name || '?').charAt(0)),
       h('span', { class: 'min-w-0' }, h('span', { class: 'block truncate font-semibold' }, me.full_name || ''), h('span', { class: 'block truncate text-muted' }, me.school_name || ('ID ' + (me.teacher_id || ''))))));
 }
+// Phone app bar: section title, back arrow on sub-pages, avatar -> settings.
+function pageTitle() {
+  if (S.view === 'editor') return 'កែសំណួរ';
+  if (S.view === 'results') return 'លទ្ធផល';
+  if (S.view === 'grader') return 'ដាក់ពិន្ទុ';
+  var t = TABS.concat([ADMIN_TAB]).filter(function (x) { return x[0] === S.tab; })[0];
+  return S.tab === 'home' || !t ? 'ប្រឡងអនឡាញ' : t[2];
+}
 function topBar() {
-  return h('div', { class: 'no-print md:hidden sticky top-0 z-30 bg-white border-b border-line px-4 py-3 flex items-center justify-between gap-3' },
-    h('div', { class: 'lg cursor-pointer', onclick: function () { goList('home'); } }, h('i'), 'ប្រឡងអនឡាញ'),
-    (S.me && S.me.full_name) ? h('button', { type: 'button', class: 'max-w-[50%] truncate px-3 py-1 rounded-full bg-navy-50 border border-line text-xs', onclick: function () { goList('settings'); } }, S.me.full_name) : null);
+  var sub = S.view !== 'list';
+  var home = !sub && S.tab === 'home';
+  var me = S.me || {};
+  return h('div', { class: 'appbar no-print md:hidden sticky top-0 z-30 border-b border-line px-2 h-14 flex items-center gap-1' },
+    sub ? h('button', { type: 'button', class: 'appbar-btn', 'aria-label': 'ត្រឡប់ក្រោយ', onclick: function () { goList(); } }, '←') : h('span', { class: 'w-2' }),
+    home ? h('div', { class: 'lg flex-1 min-w-0 text-[15px]' }, h('i'), 'ប្រឡងអនឡាញ')
+      : h('div', { class: 'flex-1 min-w-0 truncate font-bold text-[16px]' }, pageTitle()),
+    h('button', { type: 'button', class: 'avatar mr-2', title: me.full_name || 'ការកំណត់', 'aria-label': 'ការកំណត់គណនី', onclick: function () { goList('settings'); } }, String(me.full_name || '?').charAt(0)));
 }
 function bottomNav() {
   var pend = pendingTotal();
-  return h('nav', { class: 'bnav no-print md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-line grid grid-cols-6', style: 'padding-bottom:env(safe-area-inset-bottom)', 'aria-label': 'ម៉ឺនុយ' },
+  return h('nav', { class: 'bnav no-print md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-line grid grid-cols-6', style: 'padding-bottom:env(safe-area-inset-bottom)', 'aria-label': 'ម៉ឺនុយ' },
     TABS.map(function (t) {
       var active = S.tab === t[0];
-      return h('button', { type: 'button', 'aria-current': active ? 'page' : null, class: 'relative flex flex-col items-center gap-0.5 pt-2 pb-1.5 text-[10.5px] leading-tight min-w-0 ' + (active ? 'text-navy-900 font-bold' : 'text-muted'), onclick: function () { goList(t[0]); } },
-        h('span', { class: 'flex items-center justify-center w-9 h-7 rounded-lg ' + (active ? 'bg-navy-50' : '') + (active ? '' : ' opacity-70') }, icon(t[1])),
+      return h('button', { type: 'button', 'aria-current': active ? 'page' : null, class: 'relative flex flex-col items-center gap-1 pt-2 pb-2 text-[11px] leading-tight min-w-0 ' + (active ? 'text-navy-900 font-bold' : 'text-muted'), onclick: function () { goList(t[0]); } },
+        h('span', { class: 'pill' + (active ? '' : ' opacity-70') }, icon(t[1])),
         h('span', { class: 'truncate max-w-full px-0.5' }, t[2]),
         (t[0] === 'grading' && pend > 0) ? h('span', { class: 'absolute top-1 right-[18%] px-1.5 rounded-full bg-[#fff4e5] text-[#d97706] text-[10px] font-bold' }, pend) : null);
     }));
@@ -635,9 +680,9 @@ function viewHome() {
     h('div', { class: 'min-w-0' },
       h('h1', { class: 'text-[18px] font-bold' }, name ? ('សួស្តី ' + name) : 'សូមស្វាគមន៍'),
       h('p', { class: 'text-[12.5px] text-muted' }, open.length ? ('ថ្ងៃនេះមានការប្រឡង ' + open.length + ' កំពុងបើក') : ((S.me && S.me.school_name) ? S.me.school_name : 'គ្រប់គ្រងការប្រឡង ដាក់ពិន្ទុ និងតាមដានលទ្ធផលសិស្សនៅទីនេះ។'))),
-    h('div', { class: 'flex flex-wrap gap-2' },
-      btn('+ ថតថ្មី', 'ghost', function () { folderModal(null); }),
-      btn('+ ការប្រឡងថ្មី', 'primary', function () { examModal(null); }))));
+    h('div', { class: 'grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex' },
+      btn('+ ថតថ្មី', 'ghost', function () { folderModal(null); }, 'py-2'),
+      btn('+ ការប្រឡងថ្មី', 'primary', function () { examModal(null); }, 'py-2'))));
   if (window.appInstallSlot) wrap.append(window.appInstallSlot('md:hidden'));   // phones only; hides itself when installed / not possible
 
   wrap.append(h('div', { class: 'grid grid-cols-2 lg:grid-cols-4 gap-3' },
@@ -713,7 +758,7 @@ function viewStudentsTab() {
   }
   if (!st.list) return h('p', { class: 'text-slate-500' }, 'កំពុងផ្ទុក…');
   var wrap = h('div', { class: 'grid md:grid-cols-[230px_1fr] gap-4' });
-  wrap.append(classSidebar(st), rosterPanel(st));
+  wrap.append(h('div', { class: 'hidden md:block' }, classSidebar(st)), h('div', { class: 'min-w-0' }, classChips(st), rosterPanel(st)));
   return wrap;
 }
 function className(st, id) { var c = st.classes.filter(function (x) { return x.class_id === id; })[0]; return c ? c.class_name : ''; }
@@ -728,11 +773,27 @@ function classSidebar(st) {
         h('button', { type: 'button', title: 'ប្តូរឈ្មោះ', class: 'px-1', onclick: function (ev) { ev.stopPropagation(); classModal(st, c); } }, '✎'),
         h('button', { type: 'button', title: 'លុប', class: 'px-1', onclick: function (ev) { ev.stopPropagation(); removeClass(st, c); } }, '🗑')) : null);
   }
-  return h('aside', { class: 'bg-white rounded-2xl shadow-sm border border-navy-100 p-3 h-fit' },
+  return h('aside', { class: 'bg-white rounded-2xl border border-line p-3 h-fit' },
     h('div', { class: 'flex items-center justify-between mb-2' }, h('h2', { class: 'font-bold' }, 'ថ្នាក់'), btn('+ ថ្នាក់ថ្មី', 'soft', function () { classModal(st, null); })),
     item('__all__', 'សិស្សទាំងអស់'),
     st.classes.map(function (c) { return item(c.class_id, c.class_name, c); }),
     item('', 'គ្មានថ្នាក់'));
+}
+function classChips(st) {
+  function count(id) { return st.list.filter(function (s) { return id === '__all__' || s.class_id === id; }).length; }
+  function chip(id, label) {
+    return h('button', { type: 'button', class: 'chip' + (st.cls === id ? ' on' : ''), onclick: function () { st.cls = id; render(); } }, label, h('small', null, count(id)));
+  }
+  var cur = st.classes.filter(function (c) { return c.class_id === st.cls; })[0];
+  return h('div', { class: 'md:hidden mb-3' },
+    h('div', { class: 'chips' },
+      chip('__all__', 'ទាំងអស់'),
+      st.classes.map(function (c) { return chip(c.class_id, c.class_name); }),
+      chip('', 'គ្មានថ្នាក់'),
+      h('button', { type: 'button', class: 'chip', style: 'border-style:dashed', onclick: function () { classModal(st, null); } }, '+ ថ្នាក់ថ្មី')),
+    cur ? h('div', { class: 'flex gap-3 text-xs text-muted mt-2' },
+      h('button', { type: 'button', class: 'underline', onclick: function () { classModal(st, cur); } }, '✎ ប្ដូរឈ្មោះថ្នាក់'),
+      h('button', { type: 'button', class: 'underline text-rose-600', onclick: function () { removeClass(st, cur); } }, 'លុបថ្នាក់')) : null);
 }
 function classModal(st, c) {
   var name = h('input', { class: 'inp', maxlength: 60, value: c ? c.class_name : '', placeholder: 'ឧទាហរណ៍៖ ១២ក' });
@@ -802,7 +863,7 @@ function rosterPanel(st) {
     h('span', { class: 'flex-1' }), search));
   panel.append(h('p', { class: 'text-xs text-slate-500' }, 'ពេលមានបញ្ជីសិស្ស សិស្សចូលប្រឡងដោយបញ្ចូលតែលេខសម្គាល់ (ID) និងកូដប្រឡង។ ID ត្រូវតែមិនស្ទួនគ្នាក្នុងគ្រប់ថ្នាក់។ បើបញ្ជីទទេ សិស្សវាយឈ្មោះខ្លួនឯងដូចមុន។'));
   if (!shown.length) panel.append(emptyBox(q ? 'រកមិនឃើញសិស្សទេ។' : 'មិនទាន់មានសិស្សនៅទីនេះទេ។ ចុច «+ បន្ថែមសិស្ស» ឬបិទភ្ជាប់បញ្ជីពី Excel / Google Sheets។'));
-  else panel.append(h('div', { class: 'bg-white rounded-2xl border border-navy-100 shadow-sm overflow-x-auto p-2' },
+  else panel.append(h('div', { class: 'bg-white rounded-2xl border border-line overflow-x-auto p-2' },
     h('table', { class: 'w-full text-sm' },
       h('thead', null, h('tr', { class: 'text-left text-slate-500 border-b border-navy-100' },
         ['ល.រ', 'លេខសម្គាល់ (ID)', 'ឈ្មោះ', 'ភេទ', 'ថ្នាក់', ''].map(function (x) { return h('th', { class: 'py-2 px-2 font-medium whitespace-nowrap' }, x); }))),
@@ -1056,8 +1117,26 @@ function presentQR(e) {
 // ============================================================================
 function viewList() {
   var wrap = h('div', { class: 'grid md:grid-cols-[240px_1fr] gap-4' });
-  wrap.append(sidebar(), examsPanel());
+  wrap.append(h('div', { class: 'hidden md:block' }, sidebar()), h('div', { class: 'min-w-0' }, folderChips(), examsPanel()));
   return wrap;
+}
+// Phones: folders as a swipeable chip row (+ edit / delete for the selected folder).
+function folderChips() {
+  var noFolder = S.exams.filter(function (e) { return !e.folder_id; }).length;
+  function chip(id, label, count, color) {
+    return h('button', { type: 'button', class: 'chip' + (S.filter === id ? ' on' : ''), onclick: function () { S.filter = id; render(); } },
+      color ? h('i', { style: 'background:' + color }) : null, label, h('small', null, count));
+  }
+  var cur = S.folders.filter(function (f) { return f.folder_id === S.filter; })[0];
+  return h('div', { class: 'md:hidden mb-3' },
+    h('div', { class: 'chips' },
+      chip('__all__', 'ទាំងអស់', S.exams.length),
+      S.folders.map(function (f) { return chip(f.folder_id, f.folder_name, f.exam_count || 0, COLORS[f.color_tag]); }),
+      chip('', 'គ្មានថត', noFolder, '#cbd5e1'),
+      h('button', { type: 'button', class: 'chip', style: 'border-style:dashed', onclick: function () { folderModal(null); } }, '+ ថតថ្មី')),
+    cur ? h('div', { class: 'flex gap-3 text-xs text-muted mt-2' },
+      h('button', { type: 'button', class: 'underline', onclick: function () { folderModal(cur); } }, '✎ ប្ដូរឈ្មោះថត'),
+      h('button', { type: 'button', class: 'underline text-rose-600', onclick: function () { deleteFolder(cur); } }, 'លុបថត')) : null);
 }
 function sidebar() {
   var noFolderCount = S.exams.filter(function (e) { return !e.folder_id; }).length;
@@ -1071,7 +1150,7 @@ function sidebar() {
         h('button', { type: 'button', title: 'ប្តូរឈ្មោះ', class: 'px-1', onclick: function (ev) { ev.stopPropagation(); folderModal(folder); } }, '✎'),
         h('button', { type: 'button', title: 'លុប', class: 'px-1', onclick: function (ev) { ev.stopPropagation(); deleteFolder(folder); } }, '🗑')) : null);
   }
-  var box = h('aside', { class: 'bg-white rounded-2xl shadow-sm border border-navy-100 p-3 h-fit' },
+  var box = h('aside', { class: 'bg-white rounded-2xl border border-line p-3 h-fit' },
     h('div', { class: 'flex items-center justify-between mb-2' },
       h('h2', { class: 'font-bold' }, 'ថតឯកសារ'),
       btn('+ ថតថ្មី', 'soft', function () { folderModal(null); })),
@@ -1109,9 +1188,9 @@ function examsPanel() {
   var list = S.exams.filter(function (e) { return S.filter === '__all__' || e.folder_id === S.filter; });
   var title = S.filter === '__all__' ? 'ការប្រឡងទាំងអស់' : (S.filter === '' ? 'គ្មានថត' : ((S.folders.filter(function (f) { return f.folder_id === S.filter; })[0] || {}).folder_name || ''));
   var panel = h('section', null,
-    h('div', { class: 'flex items-center justify-between mb-3' },
-      h('h2', { class: 'text-lg font-bold' }, title),
-      btn('+ ការប្រឡងថ្មី', 'primary', function () { examModal(null); })));
+    h('div', { class: 'flex items-center justify-between gap-2 mb-3' },
+      h('h2', { class: 'text-lg font-bold truncate' }, title),
+      btn('+ ការប្រឡងថ្មី', 'primary', function () { examModal(null); }, 'shrink-0')));
   if (!list.length) {
     panel.append(h('div', { class: 'bg-white border border-dashed border-navy-200 rounded-2xl p-10 text-center text-slate-500' }, 'មិនទាន់មានការប្រឡងនៅទីនេះទេ។ ចុច «+ ការប្រឡងថ្មី» ដើម្បីចាប់ផ្ដើម។'));
     return panel;
@@ -1124,7 +1203,8 @@ function examsPanel() {
 function examCard(e) {
   var folder = S.folders.filter(function (f) { return f.folder_id === e.folder_id; })[0];
   var isOpen = e.status === 'Open';
-  return h('div', { class: 'bg-white rounded-2xl border border-navy-100 shadow-sm p-4 flex flex-col gap-3' },
+  var act = function (sym, label, kind, fn) { return h('button', { type: 'button', class: 'act' + (kind ? ' ' + kind : ''), onclick: fn }, h('b', null, sym), label); };
+  return h('div', { class: 'bg-white rounded-2xl border border-line p-4 flex flex-col gap-3' },
     h('div', { class: 'flex items-start justify-between gap-2' },
       h('div', { class: 'min-w-0' },
         h('div', { class: 'font-bold truncate' }, e.title),
@@ -1135,13 +1215,13 @@ function examCard(e) {
       h('span', null, e.duration_minutes + ' នាទី'),
       h('span', null, e.question_count + ' សំណួរ'),
       h('span', null, e.submission_count + ' ការដាក់ឆ្លើយ')),
-    h('div', { class: 'flex flex-wrap gap-2' },
-      btn('កែសំណួរ', 'navy', function () { openEditor(e); }),
-      btn('លទ្ធផល', 'ghost', function () { openResults(e); }),
-      btn('ដាក់ពិន្ទុ', 'ghost', function () { openGrader(e); }),
-      btn('ចែករំលែក', 'soft', function () { shareModal(e); }),
-      btn('▣ QR', 'soft', function () { presentQR(e); }),
-      btn(isOpen ? 'បិទការប្រឡង' : 'បើកការប្រឡង', isOpen ? 'danger' : 'primary', function () { toggleStatus(e); })),
+    h('div', { class: 'grid grid-cols-3 gap-2' },
+      act('✎', 'កែសំណួរ', 'pri', function () { openEditor(e); }),
+      act('▤', 'លទ្ធផល', '', function () { openResults(e); }),
+      act('✓', 'ដាក់ពិន្ទុ', '', function () { openGrader(e); }),
+      act('↗', 'ចែករំលែក', 'ok', function () { shareModal(e); }),
+      act('▣', 'QR', 'ok', function () { presentQR(e); }),
+      act(isOpen ? '■' : '▶', isOpen ? 'បិទការប្រឡង' : 'បើកការប្រឡង', isOpen ? 'bad' : 'pri', function () { toggleStatus(e); })),
     h('div', { class: 'flex flex-wrap gap-3 text-xs text-slate-500 border-t border-navy-50 pt-2' },
       h('button', { type: 'button', class: 'hover:text-navy-900 underline', onclick: function () { examModal(e); } }, 'ការកំណត់'),
       h('button', { type: 'button', class: 'hover:text-navy-900 underline', onclick: function () { duplicate(e); } }, 'ចម្លង'),
@@ -1380,15 +1460,17 @@ function viewEditor() {
   var ed = S.ed, exam = ed.exam;
   var locked = exam.status === 'Open';
   var root = h('div', null);
-  root.append(h('div', { class: 'flex flex-wrap items-center gap-2 mb-3' },
-    btn('← ត្រឡប់ក្រោយ', 'ghost', goList),
-    h('h2', { class: 'text-lg font-bold flex-1 min-w-0 truncate' }, exam.title),
-    h('span', { id: 'dirtyBadge', class: 'px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-700', style: 'display:' + (ed.dirty ? 'inline-block' : 'none') }, 'មិនទាន់រក្សាទុក'),
-    btn('📥 នាំចូលសំណួរពី AI', 'primary', importModal, locked ? 'hidden' : ''),
-    btn('⬆ បញ្ចូលពី Excel', 'ghost', importQuestionsFile, locked ? 'hidden' : ''),
-    btn('⬇ Template', 'ghost', downloadQuestionTemplate, locked ? 'hidden' : ''),
-    btn('✨ បង្កើតដោយ AI (Key)', 'soft', aiModal, locked ? 'hidden' : ''),
-    btn('រក្សាទុកសំណួរ', 'primary', saveEditor, locked ? 'hidden' : '')));
+  root.append(h('div', { class: 'flex items-center gap-2 mb-2' },
+    btn('← ត្រឡប់ក្រោយ', 'ghost', goList, 'hidden md:inline-block'),
+    h('h2', { class: 'text-lg font-bold flex-1 min-w-0 md:truncate leading-snug' }, exam.title),
+    h('span', { id: 'dirtyBadge', class: 'px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-700 shrink-0', style: 'display:' + (ed.dirty ? 'inline-block' : 'none') }, 'មិនទាន់រក្សាទុក')));
+  if (!locked) root.append(h('div', { class: 'tbar mb-3' },
+    btn('📥 នាំចូលសំណួរពី AI', 'primary', importModal),
+    btn('⬆ បញ្ចូលពី Excel', 'ghost', importQuestionsFile),
+    btn('⬇ Template', 'ghost', downloadQuestionTemplate),
+    btn('✨ បង្កើតដោយ AI (Key)', 'soft', aiModal),
+    btn('រក្សាទុកសំណួរ', 'primary', saveEditor, 'hidden md:inline-block')),
+    btn('រក្សាទុក', 'primary', saveEditor, 'fab md:hidden'));
   if (locked) {
     root.append(h('div', { class: 'mb-3 p-3 rounded-xl bg-amber-50 text-amber-700 text-sm flex flex-wrap items-center gap-3' },
       h('span', null, 'ការប្រឡងកំពុងបើក ដូច្នេះមិនអាចកែសំណួរបានទេ។ សូមបិទការប្រឡងសិន។'),
@@ -1469,7 +1551,7 @@ function questionCard(q, i) {
       h('div', { class: 'text-sm font-medium mt-3 mb-1' }, 'លក្ខណៈវិនិច្ឆ័យដាក់ពិន្ទុ (Rubric)'), ru,
       h('div', { class: 'text-xs text-slate-500 mt-1' }, 'ត្រូវបានប្រើដោយ «AI ជំនួយដាក់ពិន្ទុ» ក្នុង Speed-Grader។'));
   }
-  return h('div', { class: 'bg-white rounded-2xl border border-navy-100 shadow-sm p-4' },
+  return h('div', { class: 'bg-white rounded-2xl border border-line p-4' },
     h('div', { class: 'flex flex-wrap items-center gap-2 mb-2' },
       h('span', { class: 'w-8 h-8 rounded-full bg-navy-800 text-white flex items-center justify-center text-sm font-bold' }, i + 1),
       typeSel,
@@ -1723,9 +1805,10 @@ function cheatBadges(c) {
 }
 function viewResults() {
   var r = S.res, root = h('div', null);
-  root.append(h('div', { class: 'flex flex-wrap items-center gap-2 mb-3' },
-    btn('← ត្រឡប់ក្រោយ', 'ghost', goList),
-    h('h2', { class: 'text-lg font-bold flex-1 min-w-0 truncate' }, 'លទ្ធផល៖ ' + r.exam.title),
+  root.append(h('div', { class: 'flex items-center gap-2 mb-2' },
+    btn('← ត្រឡប់ក្រោយ', 'ghost', goList, 'hidden md:inline-block'),
+    h('h2', { class: 'text-lg font-bold flex-1 min-w-0 md:truncate leading-snug' }, r.exam.title)));
+  root.append(h('div', { class: 'tbar mb-3' },
     btn('ដាក់ពិន្ទុ (Speed-Grader)', 'soft', function () { openGrader(r.exam); }),
     btn('ដាក់ពិន្ទុស្វ័យប្រវត្តិឡើងវិញ', 'ghost', function () {
       confirmBox('ដាក់ពិន្ទុឡើងវិញ', 'គណនាពិន្ទុសំណួរបិទឡើងវិញសម្រាប់គ្រប់ការដាក់ឆ្លើយ។ ពិន្ទុដែលអ្នកដាក់ដោយដៃនឹងត្រូវរក្សាទុក។', 'ដាក់ពិន្ទុឡើងវិញ').then(function (ok) {
@@ -1760,7 +1843,7 @@ function viewResults() {
         h('td', { class: 'py-2 px-2 whitespace-nowrap text-xs text-slate-500' }, fmtDate(x.submitted_at)),
         h('td', { class: 'py-2 px-2' }, btn('មើល', 'ghost', function () { detailModal(x.submission_id); })));
     })));
-  root.append(h('div', { class: 'bg-white rounded-2xl border border-navy-100 shadow-sm overflow-x-auto p-2' }, table));
+  root.append(h('div', { class: 'bg-white rounded-2xl border border-line overflow-x-auto p-2' }, table));
   return root;
 }
 // ---------- Analysis & ability groups (ported from GAS_Score_Analysis_App) ----------
@@ -1839,7 +1922,7 @@ function viewAnalysis(r) {
   var chips = h('div', { class: 'flex flex-wrap gap-2' });
   var search = h('input', { class: 'inp sm:!w-64', type: 'search', placeholder: 'ស្វែងរកឈ្មោះ ឬលេខសម្គាល់…', value: r.q, oninput: function (ev) { r.q = ev.target.value; paintTable(); } });
   wrap.append(kpi, h('div', { class: 'no-print flex flex-wrap items-center justify-between gap-2 mb-3' }, chips, search));
-  var tableBox = h('div', { class: 'bg-white rounded-2xl border border-navy-100 shadow-sm overflow-x-auto p-2' });
+  var tableBox = h('div', { class: 'bg-white rounded-2xl border border-line overflow-x-auto p-2' });
   wrap.append(tableBox);
 
   // hardest questions
@@ -2007,8 +2090,8 @@ function openGrader(exam) {
 function viewGrader() {
   var g = S.gr, root = h('div', null);
   root.append(h('div', { class: 'flex flex-wrap items-center gap-2 mb-3' },
-    btn('← ត្រឡប់ក្រោយ', 'ghost', goList),
-    h('h2', { class: 'text-lg font-bold flex-1 min-w-0 truncate' }, 'Speed-Grader៖ ' + g.exam.title)));
+    btn('← ត្រឡប់ក្រោយ', 'ghost', goList, 'hidden md:inline-block'),
+    h('h2', { class: 'text-lg font-bold flex-1 min-w-0 md:truncate leading-snug' }, g.exam.title)));
   if (!g.data) { root.append(h('p', { class: 'text-slate-500' }, 'កំពុងផ្ទុក…')); return root; }
   var D = g.data;
   if (!D.questions.length) { root.append(h('div', { class: 'bg-white border border-dashed border-navy-200 rounded-2xl p-10 text-center text-slate-500' }, 'ការប្រឡងនេះគ្មានសំណួរឆ្លើយបកវែងទេ។')); return root; }
@@ -2020,7 +2103,7 @@ function viewGrader() {
   }); });
 
   var modeBtn = function (m, label) { return h('button', { type: 'button', class: 'px-3 py-1.5 text-sm ' + (g.mode === m ? 'bg-navy-800 text-white' : 'bg-white text-navy-800'), onclick: function () { g.mode = m; render(); } }, label); };
-  var bar = h('div', { class: 'bg-white rounded-2xl border border-navy-100 shadow-sm p-3 mb-3 flex flex-wrap items-center gap-3' },
+  var bar = h('div', { class: 'bg-white rounded-2xl border border-line p-3 mb-3 flex flex-wrap items-center gap-3' },
     h('div', { class: 'inline-flex rounded-lg overflow-hidden border border-navy-200' }, modeBtn('question', 'តាមសំណួរ'), modeBtn('student', 'តាមសិស្ស')),
     h('label', { class: 'inline-flex items-center gap-2 text-sm' }, h('input', { type: 'checkbox', checked: g.pendingOnly, class: 'accent-emerald-500', onchange: function (ev) { g.pendingOnly = ev.target.checked; render(); } }), 'បង្ហាញតែមិនទាន់ដាក់ពិន្ទុ'),
     h('span', { class: 'text-sm text-slate-600 ml-auto' }, 'បានដាក់ពិន្ទុ ' + done + ' / ' + total));
@@ -2096,7 +2179,7 @@ function gradeCard(s, q, mode) {
     safe(function () { return saveCards([card]); }).then(function () { save.disabled = false; });
   });
   S.gr.cards.push(card);
-  return h('div', { class: 'bg-white rounded-2xl border border-navy-100 shadow-sm p-4' },
+  return h('div', { class: 'bg-white rounded-2xl border border-line p-4' },
     h('div', { class: 'flex flex-wrap items-center gap-2 mb-2' },
       h('b', null, mode === 'question' ? s.student_name : ('សំណួរ ' + (S.gr.data.questions.indexOf(q) + 1))),
       mode === 'question' ? h('span', { class: 'text-xs font-mono text-slate-500' }, s.student_id) : null,

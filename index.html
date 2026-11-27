@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0f2a4a">
+<meta name="theme-color" content="#ffffff">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -119,6 +119,11 @@ html{-webkit-text-size-adjust:100%}
 body{overflow-x:hidden}
 @media (max-width:640px){input,textarea,select{font-size:16px!important}}
 @media print{body{display:none!important}}
+/* ---- App look: soft background, white surfaces, gentle page transition ---- */
+html,body{background:#f4f6fa!important}
+.page-in{animation:pageIn .22s ease-out}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.page-in{animation:none}}
 /* ---- App feel + "install as an app" (PWA) ---- */
 html,body{-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none}
 button,nav,.nav-item{-webkit-user-select:none;user-select:none}
@@ -253,8 +258,8 @@ function fieldIcon(name, input) {
 
 function mount(node) { var a = $('#app'); a.textContent = ''; a.appendChild(node); }
 function card(kids) {
-  return h('div', { class: 'min-h-screen flex justify-center px-5 py-6 sm:items-center' }, [
-    h('div', { class: 'w-full max-w-md sm:bg-white sm:border sm:border-line sm:rounded-[18px] sm:p-6 sm:shadow-[0_20px_40px_-24px_rgba(15,42,74,.25)]' }, [h('div', { class: 'lg' }, [h('i'), 'ប្រឡងអនឡាញ'])].concat(kids))]);
+  return h('div', { class: 'min-h-screen flex justify-center px-4 py-5 sm:items-center page-in' }, [
+    h('div', { class: 'w-full max-w-md bg-white border border-line rounded-[22px] px-5 pt-5 pb-6 sm:p-7 shadow-[0_20px_40px_-28px_rgba(15,42,74,.3)] self-start sm:self-auto' }, [h('div', { class: 'lg' }, [h('i'), 'ប្រឡងអនឡាញ'])].concat(kids))]);
 }
 function head(title, sub, ic) {
   return h('div', { class: 'text-center mt-8 mb-6' }, [
